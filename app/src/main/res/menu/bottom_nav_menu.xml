@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Dashboard"
+        android:icon="@drawable/dashboard"
+        android:id="@+id/navDashboard"
+        />
+    <item
+        android:title="Add"
+        android:icon="@drawable/add1"
+        android:id="@+id/navAdd"
+        >
+        <menu>
+
+            <item
+                android:title="Income"
+                android:id="@+id/navIncome"
+                />
+            <item
+                android:title="Expense"
+                android:id="@+id/navExpense"
+                />
+
+        </menu>
+    </item>
+    <item
+        android:title="Profile"
+        android:icon="@drawable/profile"
+        android:id="@+id/navProfile"
+        />
+</menu>
