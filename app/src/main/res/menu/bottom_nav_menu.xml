@@ -11,7 +11,7 @@
         android:icon="@drawable/add1"
         android:id="@+id/navAdd"
         >
-        <menu>
+       <!-- <menu>
 
             <item
                 android:title="Income"
@@ -22,7 +22,7 @@
                 android:id="@+id/navExpense"
                 />
 
-        </menu>
+        </menu>-->
     </item>
     <item
         android:title="Profile"
