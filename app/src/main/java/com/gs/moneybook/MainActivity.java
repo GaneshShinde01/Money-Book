@@ -6,14 +6,13 @@ import android.view.MenuItem;
 //import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gs.moneybook.Fragments.DashboardFragment;
+import com.gs.moneybook.Fragments.ProfileFragment;
 import com.gs.moneybook.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
 
                 if(id == R.id.navDashboard){
-                    loadFragment();
+                    loadFragment(new DashboardFragment());
                 } else if (id == R.id.navAdd) {
-
+                    loadFragment(new AddIEFragment());
                 } else if (id == R.id.navProfile) {
-
+                    loadFragment(new ProfileFragment());
                 }else{
 
                 }
