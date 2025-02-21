@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <!-- Background of the popup menu -->
+        <item name="android:popupBackground">@drawable/custom_popup_background</item>
+
+        <!-- Text color -->
+        <item name="android:textColor">#FFFFFF</item>
+
+        <!-- Item selector (for item highlight or ripple effect) -->
+        <item name="android:itemBackground">@drawable/custom_item_selector</item>
+
+        <!-- Icon color (if you want to tint the icons) -->
+        <item name="android:iconTint">#FF4081</item>
+
+    </style>
+</resources>
