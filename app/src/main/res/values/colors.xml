@@ -4,5 +4,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="bottomNavBarColor">#C4ABEB</color> <!-- Example purple color -->
+    <color name="bgAppColor">#D8BFD8</color>
 
 </resources>
