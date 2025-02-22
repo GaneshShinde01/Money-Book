@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/bgAppColor">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <!-- Full Name -->
+        <EditText
+            android:id="@+id/etFullName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Full Name"
+            android:textColorHint="@color/black"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Mobile Number -->
+        <EditText
+            android:id="@+id/etMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mobile Number"
+            android:inputType="phone"
+            android:textColorHint="@color/black"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Email -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:textColorHint="@color/black"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Occupation -->
+        <EditText
+            android:id="@+id/etOccupation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Occupation"
+            android:textColorHint="@color/black"
+            android:inputType="text"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Password -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:textColorHint="@color/black"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Date of Birth -->
+        <EditText
+            android:id="@+id/etDOB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date of Birth (DD/MM/YYYY)"
+            android:inputType="date"
+            android:textColorHint="@color/black"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:drawableLeft="@drawable/ic_calendar"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Monthly Income -->
+        <EditText
+            android:id="@+id/etIncome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/black"
+            android:hint="Monthly Income"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Savings Goal -->
+        <EditText
+            android:id="@+id/etSavingsGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Savings Goal"
+            android:textColorHint="@color/black"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:background="@drawable/et_bg"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Currency -->
+        <Spinner
+            android:id="@+id/spinnerCurrency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Register Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:textColor="#000000"
+            android:background="@drawable/btn_bg"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Register Using Google -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegisterGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register with Google"
+            android:drawableLeft="@drawable/google_new"
+            android:padding="12dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#DB4437"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Register Using Facebook -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegisterFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register with Facebook"
+            android:drawableLeft="@drawable/fb"
+            android:padding="12dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#3B5998"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Already Have an Account? Log In -->
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Log in here"
+            android:textColor="#6200EE"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+</ScrollView>

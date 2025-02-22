@@ -2,6 +2,7 @@ package com.gs.moneybook;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.Display;
@@ -18,17 +19,28 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.gs.moneybook.databinding.ActivityWellComeScreenBinding;
+
 public class WellComeScreen extends AppCompatActivity {
 
     private ImageView triangle1, triangle2, triangle3;
     private int screenWidth;
+    ActivityWellComeScreenBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_well_come_screen);
+        binding = ActivityWellComeScreenBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
+        binding.customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WellComeScreen.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         screenWidth = display.getWidth();
@@ -68,5 +80,11 @@ public class WellComeScreen extends AppCompatActivity {
         animatorSet.playTogether(translationX, scaleX, scaleY);
        // animatorSet.setStartDelay(delay);
         animatorSet.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }
