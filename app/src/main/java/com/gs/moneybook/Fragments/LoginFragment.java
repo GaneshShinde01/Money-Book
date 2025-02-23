@@ -9,8 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.MainActivity;
 import com.gs.moneybook.TestActivity;
@@ -56,16 +60,37 @@ public class LoginFragment extends Fragment {
         binding.tvForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TestActivity)getActivity()).loadFragment(new ForgetPasswordFragment());
+                ((TestActivity)getActivity()).loadFragment(new ForgetPasswordFragment(),"ForgetPasswordFragment");
             }
         });
 
         binding.tvRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TestActivity)getActivity()).loadFragment(new RegisterFragment());
+                ((TestActivity)getActivity()).loadFragment(new RegisterFragment(),"RegisterFragment");
             }
         });
+
+
+        //Handling back press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                // Check if the back stack is empty
+                if (fragmentManager.getBackStackEntryCount() > 1) {
+                    // If there are fragments in the back stack, pop the current fragment
+                    fragmentManager.popBackStack();
+                } else {
+                    // If no fragments in the back stack, finish the activity
+                    requireActivity().finish();
+                }
+            }
+        });
+
+
+
 
         return binding.getRoot();
     }

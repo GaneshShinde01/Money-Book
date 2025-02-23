@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.gs.moneybook.Fragments.LoginFragment;
 import com.gs.moneybook.Fragments.RegisterFragment;
 import com.gs.moneybook.databinding.ActivityTestBinding;
 
@@ -20,15 +21,24 @@ public class TestActivity extends AppCompatActivity {
         binding = ActivityTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        loadFragment(new RegisterFragment());
+        loadFragment(new LoginFragment(),"LoginFragment");
 
     }
 
-    public void loadFragment(Fragment fragment){
+    public void loadFragment(Fragment fragment, String tag){
         FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.containerTest,fragment);
-        ft.commit();
+        Fragment existingFragment = fm.findFragmentByTag(tag);
+
+        if (existingFragment != null) {
+            // Fragment is already in the container, just show it
+            fm.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.containerTest, fragment,tag);
+            ft.addToBackStack(tag);
+            ft.commit();
+
     }
 
     @Override

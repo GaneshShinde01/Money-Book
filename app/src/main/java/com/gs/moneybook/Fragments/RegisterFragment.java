@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -122,9 +124,29 @@ public class RegisterFragment extends Fragment {
         binding.tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TestActivity)getActivity()).loadFragment(new LoginFragment());
+                ((TestActivity)getActivity()).loadFragment(new LoginFragment(),"LoginFragment");
             }
         });
+
+        //handle back press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                // Check if the back stack is empty
+                if (fragmentManager.getBackStackEntryCount() > 1) {
+                    // If there are fragments in the back stack, pop the current fragment
+                    fragmentManager.popBackStack();
+                } else {
+                    // If no fragments in the back stack, finish the activity
+                    requireActivity().finish();
+                }
+            }
+        });
+
+
+
 
         return view;
     }

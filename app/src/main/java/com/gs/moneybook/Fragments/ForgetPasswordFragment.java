@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.R;
@@ -51,7 +53,7 @@ public class ForgetPasswordFragment extends Fragment {
                         ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
                         changePasswordFragment.setArguments(bundle);
                         getParentFragmentManager().beginTransaction()
-                                .replace(R.id.containerTest, changePasswordFragment)
+                                .replace(R.id.containerTest, changePasswordFragment,"ChangePasswordFragment")
                                 .addToBackStack(null)
                                 .commit();
                     } else {
@@ -59,6 +61,21 @@ public class ForgetPasswordFragment extends Fragment {
                     }
                 } else {
                     Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        //Handling back press
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Check if there are any fragments in the back stack
+                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    // Go back to the previous fragment
+                    getActivity().getSupportFragmentManager().popBackStack(); // Use popBackStack instead of popBackStackImmediate
+                } else {
+                    // If no fragments in the back stack, use the default back press behavior (exit activity)
+                    requireActivity().onBackPressed();
                 }
             }
         });
