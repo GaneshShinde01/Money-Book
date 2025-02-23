@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Load fragment method
-    private void loadFragment(Fragment fragment) {
+    public void loadFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.containerMain, fragment, fragment.getClass().getSimpleName());

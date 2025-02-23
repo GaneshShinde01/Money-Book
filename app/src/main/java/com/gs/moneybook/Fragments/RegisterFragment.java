@@ -20,6 +20,7 @@ import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Model.UserModel;
 import com.gs.moneybook.R;
 import com.gs.moneybook.TestActivity;
+import com.gs.moneybook.Utilities.DateUtils;
 import com.gs.moneybook.databinding.FragmentRegisterBinding;
 
 import java.util.Arrays;
@@ -215,7 +216,7 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         // Format the date and set it in the EditText
-                        String formattedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                        String formattedDate = DateUtils.formatDate(selectedDay, selectedMonth, selectedYear);
                         binding.etDOB.setText(formattedDate);
                     }
                 },

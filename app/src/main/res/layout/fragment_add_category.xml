@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/bgAppColor">
+
+    <!-- Header TextView -->
+    <TextView
+        android:id="@+id/tv_add_category_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Category"
+        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="24dp"/>
+
+    <!-- Category Name EditText -->
+    <EditText
+        android:id="@+id/et_category_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Category Name"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:background="@drawable/et_bg"
+        android:padding="12dp"
+        />
+
+    <!-- Category Type Spinner -->
+    <Spinner
+        android:id="@+id/spinner_category_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <!-- Save Category Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_save_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Category"
+        android:textColor="@color/black"
+        android:background="@drawable/btn_bg"
+        android:layout_marginTop="32dp"
+        android:padding="14dp"/>
+
+    <!-- ListView for displaying added categories -->
+    <ListView
+        android:id="@+id/lv_categories"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
+</LinearLayout>

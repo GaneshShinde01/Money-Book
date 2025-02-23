@@ -1,84 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@color/bgAppColor"
     tools:context=".Fragments.AddIncomeFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_marginTop="50dp"
-        android:text="Add Income" />
-
-    <LinearLayout
+    <!-- EditText for entering income amount -->
+    <EditText
+        android:id="@+id/incomeAmountEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:hint="Enter Income Amount"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:background="@drawable/et_bg"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Income Amount"
-            android:inputType="number"
-            android:padding="12dp"
-            android:textAlignment="center"
-            android:textColorHint="@color/black"
-            android:background="@drawable/et_bg" />
+    <!-- AutoCompleteTextView for typing/selecting categories -->
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select or Add Category"
+        android:inputType="text"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/black"
+        android:background="@drawable/et_bg"
+        android:textColorHint="@color/black"
+        android:dropDownHeight="wrap_content"
+        android:dropDownVerticalOffset="12dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
+    <!-- Spinner for selecting predefined categories -->
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/et_bg"
+        android:spinnerMode="dropdown"
+        android:popupBackground="@color/white"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black" />
 
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:hint="Add income category"
-                android:inputType="text"
-                android:textColorHint="@color/black"
-                android:padding="12dp"
-                android:background="@drawable/et_bg" />
-
-            <!-- Spinner for predefined categories -->
-            <Spinner
-                android:id="@+id/categorySpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@android:drawable/btn_dropdown" />
-
-        </LinearLayout>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Income Description"
-            android:layout_marginTop="20dp"
-            android:textColorHint="@color/black"
-            android:padding="12dp"
-            android:textAlignment="center"
-            android:background="@drawable/et_bg" />
-
-    </LinearLayout>
-
+    <!-- Button for adding income -->
     <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="150dp"
+        android:id="@+id/addIncomeButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Add Income"
         android:background="@drawable/btn_bg"
-        android:layout_gravity="center" />
+        android:text="Add Income"
+        android:textColor="@android:color/black" />
 
 </LinearLayout>

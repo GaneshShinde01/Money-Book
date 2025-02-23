@@ -42,16 +42,7 @@
         android:layout_marginTop="16dp"
         android:background="@android:drawable/btn_dropdown" />
 
-    <!-- Description Input -->
-    <EditText
-        android:id="@+id/expenseDescriptionEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Description"
-        android:padding="12dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/et_bg"
-        android:textColorHint="@color/black" />
+
 
     <!-- Add Expense Button -->
     <androidx.appcompat.widget.AppCompatButton
