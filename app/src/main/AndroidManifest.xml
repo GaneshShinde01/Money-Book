@@ -13,7 +13,7 @@
         android:theme="@style/Theme.MoneyBook"
         tools:targetApi="31">
         <activity
-            android:name=".Fragments.TestActivity"
+            android:name=".TestActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

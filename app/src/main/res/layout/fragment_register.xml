@@ -12,12 +12,23 @@
         android:gravity="center"
         android:padding="16dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register"
+            android:textColor="@color/black"
+            android:layout_marginBottom="40dp"
+            android:padding="4dp"
+            android:textSize="40sp"
+            />
+
         <!-- Full Name -->
         <EditText
             android:id="@+id/etFullName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Full Name"
+            android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:inputType="textPersonName"
             android:padding="12dp"
@@ -31,6 +42,7 @@
             android:layout_height="wrap_content"
             android:hint="Mobile Number"
             android:inputType="phone"
+            android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:padding="12dp"
             android:background="@drawable/et_bg"
@@ -42,6 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
+            android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:inputType="textEmailAddress"
             android:padding="12dp"
@@ -54,6 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Occupation"
+            android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:inputType="text"
             android:padding="12dp"
@@ -66,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
+            android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:inputType="textPassword"
             android:padding="12dp"
@@ -78,12 +93,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Date of Birth (DD/MM/YYYY)"
-            android:inputType="date"
+            android:inputType="none"
             android:textColorHint="@color/black"
             android:padding="12dp"
             android:background="@drawable/et_bg"
-            android:drawableLeft="@drawable/ic_calendar"
-            android:layout_marginBottom="16dp"/>
+            android:drawableEnd="@drawable/ic_calendar"
+            android:paddingEnd="25dp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"
+            android:focusable="false"
+            android:clickable="true"/>
+
 
         <!-- Monthly Income -->
         <EditText
@@ -94,6 +114,7 @@
             android:hint="Monthly Income"
             android:inputType="numberDecimal"
             android:padding="12dp"
+            android:textColor="@color/black"
             android:background="@drawable/et_bg"
             android:layout_marginBottom="16dp"/>
 
@@ -106,6 +127,7 @@
             android:textColorHint="@color/black"
             android:inputType="numberDecimal"
             android:padding="12dp"
+            android:textColor="@color/black"
             android:background="@drawable/et_bg"
             android:layout_marginBottom="16dp"/>
 
@@ -115,7 +137,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/et_bg"
+            android:spinnerMode="dropdown"
+            android:popupBackground="@color/white"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"/>
 
         <!-- Register Button -->
         <androidx.appcompat.widget.AppCompatButton

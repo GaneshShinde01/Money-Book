@@ -188,6 +188,62 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_USERS, null, values);
     }
 
+    public boolean checkUserExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM users WHERE email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+    public UserModel getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM users WHERE email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            UserModel user = new UserModel(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_FULL_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_MOBILE_NUMBER)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_EMAIL)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_OCCUPATION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_PASSWORD)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_DOB)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_USER_MONTHLY_INCOME)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_USER_SAVINGS_GOAL)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_CURRENCY))
+            );
+            cursor.close();
+            return user;
+        }
+
+        cursor.close();
+        return null; // No user found
+    }
+
+    // Method to verify if the user's DOB matches the stored DOB
+    public boolean verifyUserDob(String email, String dob) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM users WHERE email = ? AND dob = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, dob});
+        boolean isDobCorrect = cursor.getCount() > 0;
+        cursor.close();
+        return isDobCorrect;
+    }
+
+    // Method to update the user's password
+    public boolean updatePassword(String email, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("password", newPassword);
+        int rowsUpdated = db.update("users", contentValues, "email = ?", new String[]{email});
+        return rowsUpdated > 0;
+    }
+
+
+
     public UserModel getUserById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_USERS,

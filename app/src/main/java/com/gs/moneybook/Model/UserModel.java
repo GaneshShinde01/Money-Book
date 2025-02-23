@@ -28,6 +28,19 @@ public class UserModel {
     public UserModel() {
     }
 
+    public UserModel(String fullName, String mobileNumber, String email, String occupation, String password, String dob, double monthlyIncome, double savingsGoal, String currency) {
+        this.fullName = fullName;
+        this.mobileNumber = mobileNumber;
+        this.email = email;
+        this.occupation = occupation;
+        this.password = password;
+        this.dob = dob;
+        this.monthlyIncome = monthlyIncome;
+        this.savingsGoal = savingsGoal;
+        this.currency = currency;
+
+    }
+
     public int getId() {
         return id;
     }

@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
-    android:background="#f7f7f7">
+    android:background="@color/bgAppColor">
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,6 +15,16 @@
         android:layout_marginTop="150dp"
         android:gravity="center"
         android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textColor="@color/black"
+            android:layout_marginBottom="40dp"
+            android:padding="4dp"
+            android:textSize="40sp"
+            />
 
         <!-- Email -->
         <EditText
@@ -52,13 +64,13 @@
             android:layout_marginBottom="24dp" />
 
         <!-- Login Button -->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:backgroundTint="#6200EE"
-            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_bg"
+            android:textColor="@color/black"
             android:padding="12dp"
             android:textSize="16sp"
             android:layout_marginBottom="16dp"/>
