@@ -299,13 +299,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    // Category Table
     // Helper method to insert a category
     public boolean insertCategory(SQLiteDatabase db, String categoryName, String categoryType, int userId) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_CATEGORY_NAME, categoryName);
         values.put(COLUMN_CATEGORY_TYPE, categoryType);
-        values.put(COLUMN_CATEGORY_USER_ID, userId);  // Use -1 or a valid userId
+        values.put(COLUMN_CATEGORY_USER_ID, userId);  // Store the valid userId
 
         // Insert into the categories table
         long result = db.insert(TABLE_CATEGORIES, null, values);
@@ -317,17 +316,17 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.d("DBHelper", "Category inserted: " + categoryName);
             return true;  // Return true if insertion is successful
         }
-
     }
 
-    // Method to check if a category already exists (globally or for the user)
+
+    // Method to check if a category already exists (for the user only)
     public boolean checkCategoryExists(String categoryName, String categoryType, int userId) {
-        // Avoid using getReadableDatabase() or getWritableDatabase() directly
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
+            // Check if the category exists for the given userId
             cursor = db.rawQuery(
-                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND  userId = ?",
+                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND userId = ?",
                     new String[]{categoryName, categoryType, String.valueOf(userId)}
             );
             if (cursor != null && cursor.moveToFirst()) {
@@ -343,12 +342,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
+    // Method to get a category by ID for a specific user
     public CategoryModel getCategoryById(long id, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_CATEGORIES,
                 new String[]{COLUMN_CATEGORY_ID, COLUMN_CATEGORY_NAME, COLUMN_CATEGORY_TYPE},
-                COLUMN_CATEGORY_ID + "=? AND " + COLUMN_USER_ID + "=?",
+                COLUMN_CATEGORY_ID + "=? AND " + COLUMN_CATEGORY_USER_ID + "=?",
                 new String[]{String.valueOf(id), String.valueOf(userId)}, null, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -370,7 +370,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Query to get categories by type and user ID
-        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_USER_ID + " = ?";
+        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{categoryType, String.valueOf(userId)});
 
         if (cursor.moveToFirst()) {
@@ -388,12 +388,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int getCategoryIdByName(String categoryName, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT " + COLUMN_CATEGORY_ID + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_NAME + " = ? AND " + COLUMN_USER_ID + " = ?";
+        String query = "SELECT " + COLUMN_CATEGORY_ID + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_NAME + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{categoryName, String.valueOf(userId)});
         int categoryId = -1;
 
         if (cursor.moveToFirst()) {
-            categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("categoryId"));
         }
         cursor.close();
         db.close();
@@ -450,14 +450,14 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_CATEGORY_NAME, category.getCategoryName());
         values.put(COLUMN_CATEGORY_TYPE, category.getCategoryType()); // Update category type as well
 
-        return db.update(TABLE_CATEGORIES, values, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_USER_ID + " = ?",
+        return db.update(TABLE_CATEGORIES, values, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?",
                 new String[]{String.valueOf(category.getId()), String.valueOf(userId)});
     }
 
 
     public void deleteCategory(long id, int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_USER_ID + " = ?",
+        db.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?",
                 new String[]{String.valueOf(id), String.valueOf(userId)});
 
     }
