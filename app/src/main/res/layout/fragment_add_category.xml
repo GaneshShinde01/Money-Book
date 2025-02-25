@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:hint="Enter Category Name"
         android:inputType="text"
+        android:textColorHint="@color/black"
         android:textColor="@color/black"
         android:background="@drawable/et_bg"
         android:padding="12dp"

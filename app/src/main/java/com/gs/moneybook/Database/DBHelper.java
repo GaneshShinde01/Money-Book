@@ -62,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_CATEGORY_NAME + " TEXT NOT NULL,"
             + COLUMN_CATEGORY_TYPE + " TEXT NOT NULL,"
-            + COLUMN_CATEGORY_USER_ID + " INTEGER DEFAULT -1, " // Default userId as -1 for categories that are global for all users
+            + COLUMN_CATEGORY_USER_ID + " INTEGER NOT NULL, "
             + "FOREIGN KEY(" + COLUMN_CATEGORY_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
             + ")";
 
@@ -158,8 +158,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_CATEGORIES);
-        // Insert basic categories (global categories, without userId)
-        insertBasicCategoriesAsync();
         db.execSQL(CREATE_TABLE_TRANSACTIONS);
         db.execSQL(CREATE_TABLE_BUDGETS);
         db.execSQL(CREATE_TABLE_SAVINGS_GOALS);
@@ -329,7 +327,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             cursor = db.rawQuery(
-                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND (userId = -1 OR userId = ?)",
+                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND  userId = ?",
                     new String[]{categoryName, categoryType, String.valueOf(userId)}
             );
             if (cursor != null && cursor.moveToFirst()) {
@@ -343,34 +341,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    private void insertBasicCategoriesAsync() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SQLiteDatabase db = getWritableDatabase(); // Reopen the database in the background thread
-                try {
-                    insertBasicCategories(db);
-                } finally {
-                    db.close(); // Close the database after the operation
-                }
-            }
-        }).start();
-    }
-
-    // Method to insert basic categories into the categories table
-    // Method to insert basic categories into the categories table in a batch manner
-    public void insertBasicCategories(SQLiteDatabase db) {
-        String[] categoryNames = {"Salary", "Investment", "Groceries", "Rent"};
-        String[] categoryTypes = {"Income", "Income", "Expense", "Expense"};
-
-        // Loop through the basic categories and insert them one by one
-        for (int i = 0; i < categoryNames.length; i++) {
-            // Check if the category already exists before inserting
-            if (!checkCategoryExists(categoryNames[i], categoryTypes[i], -1)) {
-                insertCategory(db, categoryNames[i], categoryTypes[i], -1);
-            }
-        }
-    }
 
 
     public CategoryModel getCategoryById(long id, int userId) {
@@ -438,7 +408,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         // Query for categories with userId = -1 (global categories) and categories for the specific user
-        String query = "SELECT categoryName, categoryType FROM categories WHERE userId = -1 OR userId = ?";
+        String query = "SELECT categoryName, categoryType FROM categories WHERE  userId = ?";
 
         try {
             cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});

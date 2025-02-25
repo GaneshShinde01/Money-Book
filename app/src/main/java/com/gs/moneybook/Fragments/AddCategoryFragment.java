@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.gs.moneybook.Database.DBHelper;
+import com.gs.moneybook.R;
 import com.gs.moneybook.databinding.FragmentAddCategoryBinding;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class AddCategoryFragment extends Fragment {
         String[] categoryTypes = {"Income", "Expense"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 categoryTypes
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -67,7 +68,7 @@ public class AddCategoryFragment extends Fragment {
         // Set up the ListView with the retrieved categories
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_list_item_1,
+                R.layout.listview_item,
                 categories
         );
         binding.lvCategories.setAdapter(adapter);
