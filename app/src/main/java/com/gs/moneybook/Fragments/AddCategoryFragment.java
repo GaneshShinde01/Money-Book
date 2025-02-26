@@ -24,7 +24,8 @@ public class AddCategoryFragment extends Fragment {
     private DBHelper dbHelper;
     private int loggedInUserId = 1; // Assuming logged-in user ID is 1
     private ArrayAdapter<String> adapter;
-    private List<String> categories;
+    private List<String> userDefinedCategories;  // Store user-defined categories separately
+    private List<String> allCategories;  // Store all categories (system + user-defined)
 
     @Nullable
     @Override
@@ -44,13 +45,21 @@ public class AddCategoryFragment extends Fragment {
         binding.btnSaveCategory.setOnClickListener(v -> saveCategory());
 
         // Set up long click listener for ListView items
-        binding.lvCategories.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedCategory = categories.get(position);
-                showDeleteConfirmationDialog(selectedCategory);
-                return true;
+        binding.lvCategories.setOnItemLongClickListener((parent, view1, position, id) -> {
+            String selectedCategory = allCategories.get(position);
+
+            // Extract the category name and type (split based on the "(Income)" or "(Expense)" suffix)
+            String categoryName = selectedCategory.split(" \\(")[0];
+            String categoryType = selectedCategory.contains("(Income)") ? "Income" : "Expense";
+
+            // Check if the selected category is user-defined
+            if (userDefinedCategories.contains(categoryName)) {
+                showDeleteConfirmationDialog(categoryName, categoryType); // Pass category name and type
+            } else {
+                Toast.makeText(requireContext(), "System-defined categories cannot be deleted", Toast.LENGTH_SHORT).show();
             }
+
+            return true;
         });
 
         return view;
@@ -69,14 +78,16 @@ public class AddCategoryFragment extends Fragment {
     }
 
     private void loadCategories() {
-        // Get all categories (basic and user-specific) from the database
-        categories = dbHelper.getAllCategories(loggedInUserId);
+        // Load all categories (system-defined + user-defined)
+        allCategories = dbHelper.getAllCategories(loggedInUserId);
+        // Load only user-defined categories
+        userDefinedCategories = dbHelper.getUserDefinedCategories(loggedInUserId);
 
-        // Set up the ListView with the retrieved categories
+        // Set up the ListView with all categories
         adapter = new ArrayAdapter<>(
                 requireContext(),
                 R.layout.listview_item,
-                categories
+                allCategories
         );
         binding.lvCategories.setAdapter(adapter);
     }
@@ -125,22 +136,21 @@ public class AddCategoryFragment extends Fragment {
         }).start();
     }
 
-    private void showDeleteConfirmationDialog(String categoryName) {
+    private void showDeleteConfirmationDialog(String categoryName , String categoryType) {
         // Create an AlertDialog to confirm deletion
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Category")
-                .setMessage("Are you sure you want to delete this category: " + categoryName + "?")
-                .setPositiveButton("Yes", (dialog, which) -> deleteCategory(categoryName))
+                .setMessage("Are you sure you want to delete the " + categoryType + " category: " + categoryName + "?")
+                .setPositiveButton("Yes", (dialog, which) -> deleteCategory(categoryName, categoryType))  // Pass both name and type
                 .setNegativeButton("No", null)
                 .show();
     }
 
-    private void deleteCategory(String categoryName) {
+    private void deleteCategory(String categoryName , String categoryType) {
         // Delete the category from the database
         new Thread(() -> {
             try {
-                boolean isDeleted = dbHelper.deleteCategory(categoryName, loggedInUserId);
-                //Toast.makeText(requireContext(), ""+isDeleted, Toast.LENGTH_SHORT).show();
+                boolean isDeleted = dbHelper.deleteCategory(categoryName, categoryType, loggedInUserId); // Pass category type for deletion
                 requireActivity().runOnUiThread(() -> {
                     if (isDeleted) {
                         Toast.makeText(requireContext(), "Category deleted successfully!", Toast.LENGTH_SHORT).show();

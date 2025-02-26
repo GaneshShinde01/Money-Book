@@ -83,10 +83,9 @@ public class AddIncomeFragment extends Fragment {
         // Get both default and user-specific categories for the logged-in user
         List<String> userCategories = dbHelper.getCategoriesByTypeAndUserId("Income", loggedInUserId);
 
-        // Add the categories to the list
-        //categoryNames.addAll(defaultCategories);
+        // Add the user categories to the list for AutoCompleteTextView
         categoryNames.addAll(userCategories);
-        categoryNames.add(ADD_NEW_CATEGORY); // Add "Add New Category" option
+        categoryNames.add(ADD_NEW_CATEGORY); // Add "Other" option only for AutoCompleteTextView
 
         // Set up the adapter for AutoCompleteTextView (suggestions dropdown)
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -94,9 +93,11 @@ public class AddIncomeFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line,
                 categoryNames
         );
-
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(requireContext(),R.layout.listview_item,categoryNames);
         binding.autoCompleteEditText.setAdapter(adapter);
+
+        // ListView setup without the "Other" option
+        List<String> categoryNamesForListView = new ArrayList<>(userCategories);  // Exclude "Other"
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(requireContext(), R.layout.listview_item, categoryNamesForListView);
         binding.lvCategoriesIncome.setAdapter(adapter2);
     }
 

@@ -457,7 +457,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Query to get categories by type and user ID
-        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = - 1 " + " OR " + COLUMN_CATEGORY_USER_ID + " = ?";
+        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = - 1 OR " + COLUMN_CATEGORY_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{categoryType, String.valueOf(userId)});
 
         if (cursor.moveToFirst()) {
@@ -555,11 +555,14 @@ public class DBHelper extends SQLiteOpenHelper {
         return userCategories;
     }
 
-    public boolean deleteCategory(String categoryName, int userId) {
+    public boolean deleteCategory(String categoryName, String categoryType, int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        int result = db.delete("categories", "categoryName = ? AND userId = ?", new String[]{categoryName, String.valueOf(userId)});
-        return result > 0;
+        int rowsAffected = db.delete("categories", "categoryName = ? AND categoryType = ? AND userId = ?",
+                new String[]{categoryName, categoryType, String.valueOf(userId)});
+        return rowsAffected > 0;
     }
+
+
 
 
 
