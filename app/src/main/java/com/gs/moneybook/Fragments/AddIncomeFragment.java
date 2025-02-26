@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -25,7 +26,9 @@ public class AddIncomeFragment extends Fragment {
     private FragmentAddIncomeBinding binding;
     private DBHelper dbHelper;
     private int loggedInUserId = 1; // Assuming logged-in user ID is 1
-    private final String ADD_NEW_CATEGORY = "Add New Category";
+    private final String ADD_NEW_CATEGORY = "Other";
+    private String categoryNameFromList;
+    private String categoryName;
 
     public AddIncomeFragment() {
         // Required empty public constructor
@@ -58,6 +61,18 @@ public class AddIncomeFragment extends Fragment {
             }
         });
 
+
+        binding.lvCategoriesIncome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                categoryNameFromList = (String) binding.lvCategoriesIncome.getItemAtPosition(position);
+
+                binding.autoCompleteEditText.setText(categoryNameFromList);
+                //Toast.makeText(requireContext(), "Category = "+categoryNameFromList, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
 
@@ -66,11 +81,10 @@ public class AddIncomeFragment extends Fragment {
         List<String> categoryNames = new ArrayList<>();
 
         // Get both default and user-specific categories for the logged-in user
-        List<String> defaultCategories = getDefaultCategories(); // Load predefined categories (e.g., Salary, Groceries)
         List<String> userCategories = dbHelper.getCategoriesByTypeAndUserId("Income", loggedInUserId);
 
         // Add the categories to the list
-        categoryNames.addAll(defaultCategories);
+        //categoryNames.addAll(defaultCategories);
         categoryNames.addAll(userCategories);
         categoryNames.add(ADD_NEW_CATEGORY); // Add "Add New Category" option
 
@@ -80,24 +94,25 @@ public class AddIncomeFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line,
                 categoryNames
         );
+
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(requireContext(),R.layout.listview_item,categoryNames);
         binding.autoCompleteEditText.setAdapter(adapter);
+        binding.lvCategoriesIncome.setAdapter(adapter2);
     }
 
-    // Method to retrieve default categories for income (hardcoded)
-    private List<String> getDefaultCategories() {
-        List<String> defaultCategories = new ArrayList<>();
-        defaultCategories.add("Salary");
-        defaultCategories.add("Freelance");
-        defaultCategories.add("Investments");
-        defaultCategories.add("Gifts");
-        defaultCategories.add("Others");
-        return defaultCategories;
-    }
 
     // Method to add income
     private void addIncome() {
         // Get user inputs
-        String categoryName = binding.autoCompleteEditText.getText().toString();
+
+       /* if(categoryNameFromList.isEmpty()){
+             categoryName = binding.autoCompleteEditText.getText().toString();
+        }else {
+
+            binding.autoCompleteEditText.setText(categoryNameFromList);
+            categoryName = binding.autoCompleteEditText.getText().toString();
+        }*/
+       categoryName = binding.autoCompleteEditText.getText().toString();
         String amountString = binding.incomeAmountEditText.getText().toString();
 
         if (!TextUtils.isEmpty(amountString)) {
@@ -119,72 +134,62 @@ public class AddIncomeFragment extends Fragment {
                             Toast.makeText(requireContext(), "Income added successfully!", Toast.LENGTH_SHORT).show();
                             clearInputFields();
                         } else {
-                            Toast.makeText(requireContext(), "Failed to add income!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Error adding income.", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(requireContext(), "Invalid category selected!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    binding.incomeAmountEditText.setError("Amount must be positive");
+                    Toast.makeText(requireContext(), "Amount must be greater than zero.", Toast.LENGTH_SHORT).show();
                 }
             } catch (NumberFormatException e) {
-                binding.incomeAmountEditText.setError("Invalid amount format");
+                Toast.makeText(requireContext(), "Invalid amount entered.", Toast.LENGTH_SHORT).show();
             }
         } else {
-            binding.incomeAmountEditText.setError("Amount is required");
+            Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Method to ensure category exists in the database (insert if not present)
+    // Method to ensure the category exists in the database
     private boolean ensureCategoryExists(String categoryName) {
-        boolean categoryExists = dbHelper.isCategoryExist(categoryName, loggedInUserId);
-
-        // If category not found, treat it as a default category to be inserted
-        if (!categoryExists) {
-            // Check if it's a default category
-            List<String> defaultCategories = getDefaultCategories();
-            if (defaultCategories.contains(categoryName)) {
-                // Insert the default category into the database
-                dbHelper.insertCategory(categoryName, "Income", loggedInUserId);
-                return true;
-            } else {
-                return false;
-            }
+        if (!dbHelper.checkCategoryExists(categoryName, "Income", loggedInUserId)) {
+            // Insert the new category for the user
+            return dbHelper.insertCategory(dbHelper.getWritableDatabase(), categoryName, "Income", loggedInUserId);
         }
-
         return true;
     }
 
-    // Method to validate the input fields
+    // Method to validate user input
     private boolean validateInput() {
-        if (TextUtils.isEmpty(binding.autoCompleteEditText.getText().toString())) {
-            binding.autoCompleteEditText.setError("Category is required");
+        if (TextUtils.isEmpty(binding.autoCompleteEditText.getText())) {
+            Toast.makeText(requireContext(), "Please select a category.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (TextUtils.isEmpty(binding.incomeAmountEditText.getText().toString())) {
-            binding.incomeAmountEditText.setError("Amount is required");
+
+        if (TextUtils.isEmpty(binding.incomeAmountEditText.getText())) {
+            Toast.makeText(requireContext(), "Please enter an amount.", Toast.LENGTH_SHORT).show();
             return false;
         }
+
         return true;
     }
 
-    // Method to clear input fields after successful insertion
+    // Method to clear input fields after successfully adding income
     private void clearInputFields() {
         binding.autoCompleteEditText.setText("");
         binding.incomeAmountEditText.setText("");
     }
 
-    // Method to navigate to AddCategoryFragment
+    // Navigate to AddCategoryFragment to allow the user to add a new category
     private void navigateToAddCategoryFragment() {
+        AddCategoryFragment addCategoryFragment = new AddCategoryFragment();
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.containerMain, new AddCategoryFragment());
+        transaction.replace(R.id.containerMain, addCategoryFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         binding = null;
     }
 }

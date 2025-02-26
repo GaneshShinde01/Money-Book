@@ -1,5 +1,6 @@
 package com.gs.moneybook.Fragments;
 
+import android.app.AlertDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.gs.moneybook.Database.DBHelper;
@@ -21,6 +23,8 @@ public class AddCategoryFragment extends Fragment {
     private FragmentAddCategoryBinding binding;
     private DBHelper dbHelper;
     private int loggedInUserId = 1; // Assuming logged-in user ID is 1
+    private ArrayAdapter<String> adapter;
+    private List<String> categories;
 
     @Nullable
     @Override
@@ -39,6 +43,16 @@ public class AddCategoryFragment extends Fragment {
         // Handle Save Category button click
         binding.btnSaveCategory.setOnClickListener(v -> saveCategory());
 
+        // Set up long click listener for ListView items
+        binding.lvCategories.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedCategory = categories.get(position);
+                showDeleteConfirmationDialog(selectedCategory);
+                return true;
+            }
+        });
+
         return view;
     }
 
@@ -56,17 +70,10 @@ public class AddCategoryFragment extends Fragment {
 
     private void loadCategories() {
         // Get all categories (basic and user-specific) from the database
-        List<String> categories = dbHelper.getAllCategories(loggedInUserId);
-
-        // Add some hardcoded categories to the list
-        categories.add("Salary");
-        categories.add("Freelance");
-        categories.add("Groceries");
-        categories.add("Bills");
-        categories.add("Savings");
+        categories = dbHelper.getAllCategories(loggedInUserId);
 
         // Set up the ListView with the retrieved categories
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        adapter = new ArrayAdapter<>(
                 requireContext(),
                 R.layout.listview_item,
                 categories
@@ -108,6 +115,39 @@ public class AddCategoryFragment extends Fragment {
                         } else {
                             Toast.makeText(requireContext(), "Failed to add category. Try again.", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() -> {
+                    Toast.makeText(requireContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
+    }
+
+    private void showDeleteConfirmationDialog(String categoryName) {
+        // Create an AlertDialog to confirm deletion
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Category")
+                .setMessage("Are you sure you want to delete this category: " + categoryName + "?")
+                .setPositiveButton("Yes", (dialog, which) -> deleteCategory(categoryName))
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void deleteCategory(String categoryName) {
+        // Delete the category from the database
+        new Thread(() -> {
+            try {
+                boolean isDeleted = dbHelper.deleteCategory(categoryName, loggedInUserId);
+                //Toast.makeText(requireContext(), ""+isDeleted, Toast.LENGTH_SHORT).show();
+                requireActivity().runOnUiThread(() -> {
+                    if (isDeleted) {
+                        Toast.makeText(requireContext(), "Category deleted successfully!", Toast.LENGTH_SHORT).show();
+                        // Reload the categories list after deletion
+                        loadCategories();
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to delete category. Try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (Exception e) {

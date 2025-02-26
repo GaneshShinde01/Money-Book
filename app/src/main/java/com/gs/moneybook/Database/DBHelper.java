@@ -16,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Database name and version
     private static final String DATABASE_NAME = "MoneyBook.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 1;
 
     // Table Names
     private static final String TABLE_USERS = "users";
@@ -62,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_CATEGORY_NAME + " TEXT NOT NULL,"
             + COLUMN_CATEGORY_TYPE + " TEXT NOT NULL,"
-            + COLUMN_CATEGORY_USER_ID + " INTEGER NOT NULL, "
+            + COLUMN_CATEGORY_USER_ID + " INTEGER DEFAULT -1, "
             + "FOREIGN KEY(" + COLUMN_CATEGORY_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
             + ")";
 
@@ -158,6 +158,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_CATEGORIES);
+        defaultCategories(db);
         db.execSQL(CREATE_TABLE_TRANSACTIONS);
         db.execSQL(CREATE_TABLE_BUDGETS);
         db.execSQL(CREATE_TABLE_SAVINGS_GOALS);
@@ -318,6 +319,92 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void defaultCategories(SQLiteDatabase db){
+        // Expense categories
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Groceries', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Rent', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Utilities', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Transport', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Entertainment', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Dining Out', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Health', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Insurance', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Shopping', 'Expense', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Bills', 'Expense', -1)");
+
+        // Income categories
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Salary', 'Income', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Investment', 'Income', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Freelancing', 'Income', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Gifts', 'Income', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Interest', 'Income', -1)");
+
+        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
+                + COLUMN_CATEGORY_NAME + ", "
+                + COLUMN_CATEGORY_TYPE + ", "
+                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Rental Income', 'Income', -1)");
+
+
+    }
+
 
     // Method to check if a category already exists (for the user only)
     public boolean checkCategoryExists(String categoryName, String categoryType, int userId) {
@@ -326,7 +413,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             // Check if the category exists for the given userId
             cursor = db.rawQuery(
-                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND userId = ?",
+                    "SELECT COUNT(*) FROM categories WHERE categoryName = ? AND categoryType = ? AND (userId = -1 OR userId = ?)",
                     new String[]{categoryName, categoryType, String.valueOf(userId)}
             );
             if (cursor != null && cursor.moveToFirst()) {
@@ -370,7 +457,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Query to get categories by type and user ID
-        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?";
+        String query = "SELECT " + COLUMN_CATEGORY_NAME + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = - 1 " + " OR " + COLUMN_CATEGORY_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{categoryType, String.valueOf(userId)});
 
         if (cursor.moveToFirst()) {
@@ -408,7 +495,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         // Query for categories with userId = -1 (global categories) and categories for the specific user
-        String query = "SELECT categoryName, categoryType FROM categories WHERE  userId = ?";
+        String query = "SELECT categoryName, categoryType FROM categories WHERE  (userId = -1 OR userId = ?)";
 
         try {
             cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
@@ -455,11 +542,23 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void deleteCategory(long id, int userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?",
-                new String[]{String.valueOf(id), String.valueOf(userId)});
+    public List<String> getUserDefinedCategories(int userId) {
+        List<String> userCategories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT categoryName FROM categories WHERE userId = ?", new String[]{String.valueOf(userId)});
+        if (cursor.moveToFirst()) {
+            do {
+                userCategories.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return userCategories;
+    }
 
+    public boolean deleteCategory(String categoryName, int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete("categories", "categoryName = ? AND userId = ?", new String[]{categoryName, String.valueOf(userId)});
+        return result > 0;
     }
 
 
@@ -468,7 +567,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Create a new transaction
     // Create a new transaction
-    public long createTransaction(double amount, String date, int categoryId, int userId, String transactionType) {
+    public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TRANSACTION_AMOUNT, amount);
