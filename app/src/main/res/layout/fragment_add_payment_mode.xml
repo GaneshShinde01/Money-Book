@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/bgAppColor">
+
+    <!-- Header TextView -->
+    <TextView
+        android:id="@+id/tv_add_payment_mode_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Payment Mode"
+        android:textSize="24sp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="24dp"/>
+
+    <!-- Category Name EditText -->
+    <EditText
+        android:id="@+id/et_payment_mode_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Payment Mode"
+        android:inputType="text"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/et_bg"
+        android:padding="12dp"
+        />
+
+
+    <!-- Save Category Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_save_payment_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Payment Mode"
+        android:textColor="@color/black"
+        android:background="@drawable/btn_bg"
+        android:layout_marginTop="32dp"
+        android:padding="14dp"/>
+
+    <!-- ListView for displaying added categories -->
+    <ListView
+        android:id="@+id/lv_payment_mode"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
+</LinearLayout>

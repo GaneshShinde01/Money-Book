@@ -2,47 +2,53 @@ package com.gs.moneybook.Model;
 
 public class TransactionModel {
 
-    private int id;
-    private String transactionName;
-    private String category;
+    private int transactionId;
     private double amount;
-    private String date;
-    private String transactionType; // Income or Expense
+    private String date; // Could be a String or Date type depending on usage
+    private int categoryId;
+    private int userId;
+    private String type; // "Income" or "Expense"
+    private int paymentModeId;
+    private String categoryName; // Add this for the category name
 
-    public TransactionModel(int id, String transactionName, String category, double amount, String date, String transactionType) {
-        this.id = id;
-        this.transactionName = transactionName;
-        this.category = category;
+
+    public TransactionModel(int transactionId, double amount, String date, int categoryId, int userId, String type, int paymentModeId) {
+        this.transactionId = transactionId;
         this.amount = amount;
         this.date = date;
-        this.transactionType = transactionType;
+        this.categoryId = categoryId;
+        this.userId = userId;
+        this.type = type;
+        this.paymentModeId = paymentModeId;
+
+    }
+
+    public TransactionModel(int transactionId, double amount, String date, int categoryId, String type, int paymentModeId) {
+        this.transactionId = transactionId;
+        this.amount = amount;
+        this.date = date;
+        this.categoryId = categoryId;
+        this.type = type;
+        this.paymentModeId = paymentModeId;
     }
 
     public TransactionModel() {
     }
 
-    public int getId() {
-        return id;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public String getTransactionName() {
-        return transactionName;
+    public int getTransactionId() {
+        return transactionId;
     }
 
-    public void setTransactionName(String transactionName) {
-        this.transactionName = transactionName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
     }
 
     public double getAmount() {
@@ -61,11 +67,36 @@ public class TransactionModel {
         this.date = date;
     }
 
-    public String getTransactionType() {
-        return transactionType;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getPaymentModeId() {
+        return paymentModeId;
+    }
+
+    public void setPaymentModeId(int paymentModeId) {
+        this.paymentModeId = paymentModeId;
     }
 }
+

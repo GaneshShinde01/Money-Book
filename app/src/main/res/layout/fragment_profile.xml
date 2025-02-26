@@ -1,136 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
     android:padding="16dp"
     android:background="@color/bgAppColor">
 
-    <!-- Back Button Row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="start">
-
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_back_arrow"
-            android:contentDescription="Back"
-            android:layout_marginBottom="16dp" />
-
-    </LinearLayout>
-
-    <!-- Profile Image -->
-    <ImageView
-        android:id="@+id/profileImage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/profile"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/circular_background" />
-
-    <!-- User Name -->
-    <TextView
-        android:id="@+id/userNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ganesh Shinde"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="24dp" />
-
-    <!-- Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addCategoryButton"
-            android:layout_width="250dp"
+        <!-- Back Button Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Category"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:paddingStart="15dp"
-            android:drawableStart="@drawable/ic_add_category"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_bg" />
+            android:orientation="horizontal"
+            android:gravity="start">
 
-        <!-- Purchase History Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/purchaseHistoryButton"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:text="Purchase History"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:paddingStart="15dp"
-            android:drawableStart="@drawable/ic_purchase_history"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_bg" />
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_back_arrow"
+                android:contentDescription="Back"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Investment History Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/investmentHistoryButton"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:text="Investment History"
-            android:textSize="16sp"
-            android:paddingStart="15dp"
-            android:textColor="@color/black"
-            android:drawableStart="@drawable/ic_investment_history"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_bg" />
+        </LinearLayout>
 
-        <!-- All Transactions Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/allTransactionsButton"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:text="ALL Transactions"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:drawableStart="@drawable/ic_all_transactions"
-            android:paddingStart="15dp"
-            android:paddingEnd="20dp"
+        <!-- Profile Image -->
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/profile"
+            android:layout_gravity="center"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_bg" />
+            android:scaleType="centerCrop"
+            android:background="@drawable/circular_background" />
 
-        <!-- Calendar Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/calendarButton"
-            android:layout_width="250dp"
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/userNameTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calendar"
-            android:textSize="16sp"
+            android:text="Ganesh Shinde"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="@color/black"
-            android:paddingStart="15dp"
-            android:paddingEnd="30dp"
-            android:drawableStart="@drawable/ic_calendar"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/btn_bg" />
+            android:layout_marginBottom="24dp" />
 
-        <!-- Notebook Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/notebookButton"
-            android:layout_width="250dp"
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Notebook"
-            android:textSize="16sp"
-            android:paddingStart="15dp"
-            android:textColor="@color/black"
-            android:paddingEnd="30dp"
-            android:drawableStart="@drawable/ic_notebook"
-            android:background="@drawable/btn_bg" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/addCategoryButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="15dp"
+                android:paddingEnd="25dp"
+                android:drawableStart="@drawable/ic_add_category"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/addPaymentModeButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Payment Modes"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="15dp"
+                android:paddingEnd="20dp"
+                android:drawableStart="@drawable/ic_payment_modes"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <!-- Purchase History Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/purchaseHistoryButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Purchase History"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="15dp"
+                android:drawableStart="@drawable/ic_purchase_history"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <!-- Investment History Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/investmentHistoryButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Investment History"
+                android:textSize="16sp"
+                android:paddingStart="15dp"
+                android:textColor="@color/black"
+                android:drawableStart="@drawable/ic_investment_history"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <!-- All Transactions Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/allTransactionsButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="ALL Transactions"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:drawableStart="@drawable/ic_all_transactions"
+                android:paddingStart="15dp"
+                android:paddingEnd="20dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <!-- Calendar Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/calendarButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Calendar"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="15dp"
+                android:paddingEnd="30dp"
+                android:drawableStart="@drawable/ic_calendar"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <!-- Notebook Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/notebookButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Notebook"
+                android:textSize="16sp"
+                android:paddingStart="15dp"
+                android:textColor="@color/black"
+                android:paddingEnd="30dp"
+                android:drawableStart="@drawable/ic_notebook"
+                android:background="@drawable/btn_bg" />
+
+        </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+
+</ScrollView>

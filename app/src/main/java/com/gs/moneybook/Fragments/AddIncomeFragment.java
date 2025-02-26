@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -129,7 +130,7 @@ public class AddIncomeFragment extends Fragment {
 
                     if (categoryExists) {
                         // Now use the categoryName in the createTransaction method
-                        long result = dbHelper.createTransaction(amount, currentDate, categoryName, loggedInUserId, "Income");
+                        long result = dbHelper.createTransaction(amount, currentDate, categoryName, loggedInUserId, "Income",null);
 
                         if (result != -1) {
                             Toast.makeText(requireContext(), "Income added successfully!", Toast.LENGTH_SHORT).show();

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@color/bgAppColor"
     android:gravity="center_horizontal">
 
     <!-- Heading -->
@@ -13,6 +14,8 @@
         android:text="Add Expense"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="16dp" />
 
     <!-- Amount Input -->
@@ -24,34 +27,73 @@
         android:hint="Enter Expense Amount"
         android:inputType="numberDecimal"
         android:padding="12dp"
+        android:textColor="@color/black"
+        android:layout_marginTop="25dp"
         android:textColorHint="@color/black" />
 
-    <!-- Expense Category Spinner -->
-    <Spinner
-        android:id="@+id/expenseCategorySpinner"
+    <!-- AutoCompleteTextView for typing/selecting categories -->
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteEditTextForExpenseCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@android:drawable/btn_dropdown" />
+        android:hint="Select or Add Category"
+        android:inputType="text"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/black"
+        android:background="@drawable/et_bg"
+        android:textColorHint="@color/black"
+        android:dropDownHeight="wrap_content"
+        android:dropDownVerticalOffset="12dp" />
 
-    <!-- Payment Mode Spinner -->
-    <Spinner
-        android:id="@+id/paymentModeSpinner"
+    <!-- AutoCompleteTextView for typing/selecting payment mode -->
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteEditTextExpensePaymentMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@android:drawable/btn_dropdown" />
-
-
+        android:hint="Select or Add Payment Mode"
+        android:inputType="text"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/black"
+        android:background="@drawable/et_bg"
+        android:textColorHint="@color/black"
+        android:dropDownHeight="wrap_content"
+        android:dropDownVerticalOffset="12dp" />
 
     <!-- Add Expense Button -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addExpenseButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Expense"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:textColor="@color/black"
         android:background="@drawable/btn_bg" />
+
+    <!-- Categories Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="40dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categories"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:textColor="@color/black" />
+
+        <ListView
+            android:id="@+id/lv_categories_expense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp"
+            android:padding="8dp" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,25 +1,33 @@
 package com.gs.moneybook.Model;
 
 public class CategoryModel {
-    private int id;
+    private int categoryId;
     private String categoryName;
-    private String categoryType; // E.g., Income or Expense
-
-    public CategoryModel(int id, String categoryName, String categoryType) {
-        this.id = id;
-        this.categoryName = categoryName;
-        this.categoryType = categoryType;
-    }
+    private String categoryType; // e.g., Income/Expense
+    private int userId;
 
     public CategoryModel() {
     }
 
-    public int getId() {
-        return id;
+    public CategoryModel(int categoryId, String categoryName, String categoryType, int userId) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.categoryType = categoryType;
+        this.userId = userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public CategoryModel(int categoryId, String categoryName, String categoryType) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.categoryType = categoryType;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getCategoryName() {
@@ -36,5 +44,13 @@ public class CategoryModel {
 
     public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

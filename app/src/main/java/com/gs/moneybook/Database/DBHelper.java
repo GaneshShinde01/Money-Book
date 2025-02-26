@@ -1,11 +1,14 @@
 package com.gs.moneybook.Database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.gs.moneybook.Model.*;
 
@@ -21,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Table Names
     private static final String TABLE_USERS = "users";
     private static final String TABLE_CATEGORIES = "categories";
+    private static final String TABLE_PAYMENT_MODES = "payment_modes";
     private static final String TABLE_TRANSACTIONS = "transactions";
     private static final String TABLE_BUDGETS = "budgets";
     private static final String TABLE_SAVINGS_GOALS = "savings_goals";
@@ -66,24 +70,42 @@ public class DBHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY(" + COLUMN_CATEGORY_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
             + ")";
 
+    //Crate Payment Modes Table
+
+    private static final String COLUMN_PAYMENT_MODE_ID = "paymentModeId";
+    private static final String COLUMN_PAYMENT_MODE_NAME = "paymentModeName";
+    private static final String COLUMN_PAYMENT_MODE_USER_ID = "userId"; // New column for userId
+
+    // Updated table creation SQL to include the userId column
+    private static final String CREATE_TABLE_PAYMENT_MODES = "CREATE TABLE " + TABLE_PAYMENT_MODES + "("
+            + COLUMN_PAYMENT_MODE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_PAYMENT_MODE_NAME + " TEXT NOT NULL,"
+            + COLUMN_PAYMENT_MODE_USER_ID + " INTEGER NOT NULL"  // Add this line to associate payment modes with a user
+            + ")";
+
+
     // Create Transactions Table
     private static final String COLUMN_TRANSACTION_ID = "transactionId";
     private static final String COLUMN_TRANSACTION_AMOUNT = "amount";
     private static final String COLUMN_TRANSACTION_DATE = "date";
     private static final String COLUMN_TRANSACTION_CATEGORY_ID = "categoryId";
     private static final String COLUMN_TRANSACTION_USER_ID = "userId";
-    private static final String COLUMN_TRANSACTION_TYPE = "type"; // "income" or "expense"
+    private static final String COLUMN_TRANSACTION_TYPE = "type"; // "Income" or "Expense"
+    private static final String COLUMN_TRANSACTION_PAYMENT_MODE_ID = "paymentModeId"; // Foreign key to payment_modes table
 
     private static final String CREATE_TABLE_TRANSACTIONS = "CREATE TABLE " + TABLE_TRANSACTIONS + "("
             + COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_TRANSACTION_AMOUNT + " REAL NOT NULL,"
-            + COLUMN_TRANSACTION_DATE + " TEXT NOT NULL,"  // Consider changing TEXT to DATETIME if possible
+            + COLUMN_TRANSACTION_DATE + " TEXT NOT NULL,"  // Consider changing TEXT to DATETIME for better date handling
             + COLUMN_TRANSACTION_CATEGORY_ID + " INTEGER NOT NULL,"
             + COLUMN_TRANSACTION_USER_ID + " INTEGER NOT NULL,"
-            + COLUMN_TRANSACTION_TYPE + " TEXT NOT NULL,"
+            + COLUMN_TRANSACTION_TYPE + " TEXT NOT NULL,"  // Type will be "Income" or "Expense"
+            + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " INTEGER,"  // Foreign key to reference the payment mode
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "),"
-            + "FOREIGN KEY (" + COLUMN_TRANSACTION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ")"
+            + "FOREIGN KEY (" + COLUMN_TRANSACTION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "),"
+            + "FOREIGN KEY (" + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ") REFERENCES " + TABLE_PAYMENT_MODES + "(" + COLUMN_PAYMENT_MODE_ID + ")"
             + ")";
+
 
     // Create Budgets Table
     private static final String COLUMN_BUDGET_ID = "budgetId";
@@ -159,6 +181,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_CATEGORIES);
         defaultCategories(db);
+        db.execSQL(CREATE_TABLE_PAYMENT_MODES);
+        // Insert default payment modes
+        insertDefaultPaymentModes(db);
         db.execSQL(CREATE_TABLE_TRANSACTIONS);
         db.execSQL(CREATE_TABLE_BUDGETS);
         db.execSQL(CREATE_TABLE_SAVINGS_GOALS);
@@ -170,6 +195,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAYMENT_MODES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAVINGS_GOALS);
@@ -429,7 +455,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    // Method to get a category by ID for a specific user
+/*    // Method to get a category by ID for a specific user
     public CategoryModel getCategoryById(long id, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -449,7 +475,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return null; // Return null if no record is found
-    }
+    }*/
 
 
     public List<String> getCategoriesByTypeAndUserId(String categoryType, int userId) {
@@ -530,6 +556,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
+/*
     public int updateCategory(CategoryModel category, int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -540,6 +567,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.update(TABLE_CATEGORIES, values, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?",
                 new String[]{String.valueOf(category.getId()), String.valueOf(userId)});
     }
+*/
 
 
     public List<String> getUserDefinedCategories(int userId) {
@@ -563,14 +591,128 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+    // Payment mode table curd
+
+    // Method to insert default payment modes for system (userId = -1)
+    private void insertDefaultPaymentModes(SQLiteDatabase db) {
+        String[] defaultPaymentModes = {"Cash", "Credit Card", "Debit Card", "Bank Transfer", "Mobile Payment"};
+
+        for (String paymentMode : defaultPaymentModes) {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PAYMENT_MODE_NAME, paymentMode);
+            values.put(COLUMN_PAYMENT_MODE_USER_ID, -1);  // Insert default payment modes for user -1 (system-wide)
+            db.insert(TABLE_PAYMENT_MODES, null, values);
+        }
+    }
+
+
+    // Method to insert user-defined payment mode for a specific user
+    public boolean insertPaymentMode(String paymentModeName, int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PAYMENT_MODE_NAME, paymentModeName);
+        values.put(COLUMN_PAYMENT_MODE_USER_ID, userId); // Store the userId for the payment mode
+
+        long result = db.insert(TABLE_PAYMENT_MODES, null, values);
+        return result != -1; // Returns true if inserted successfully
+    }
+
+
+    // Check if the payment mode already exists for the user or system-wide
+    public boolean checkPaymentModeExists(String paymentModeName, int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Check if the payment mode exists for the user or in the system-wide modes
+        Cursor cursor = db.rawQuery(
+                "SELECT " + COLUMN_PAYMENT_MODE_NAME + " FROM " + TABLE_PAYMENT_MODES +
+                        " WHERE " + COLUMN_PAYMENT_MODE_NAME + " = ? AND (" + COLUMN_PAYMENT_MODE_USER_ID + " = ? OR " + COLUMN_PAYMENT_MODE_USER_ID + " = -1)",
+                new String[]{paymentModeName, String.valueOf(userId)}
+        );
+
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+
+    // Method to retrieve payment modes for a specific user, including system-wide modes
+    public List<String> getPaymentModes(int userId) {
+        List<String> paymentModes = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query to get both user-defined and system-defined payment modes
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_PAYMENT_MODE_NAME + " FROM " + TABLE_PAYMENT_MODES
+                        + " WHERE " + COLUMN_PAYMENT_MODE_USER_ID + " = ? OR " + COLUMN_PAYMENT_MODE_USER_ID + " = -1",
+                new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                paymentModes.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return paymentModes;
+    }
+
+
+
+    // Method to get user-defined payment modes for a specific user
+    public List<String> getUserDefinedPaymentModes(int userId) {
+        List<String> userDefinedPaymentModes = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Assuming system-defined modes have IDs <= 5 (i.e., first 5 payment modes are system-defined)
+        String query = "SELECT " + COLUMN_PAYMENT_MODE_NAME + " FROM " + TABLE_PAYMENT_MODES +
+                " WHERE " + COLUMN_PAYMENT_MODE_ID + " > 5 AND " + COLUMN_PAYMENT_MODE_USER_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                userDefinedPaymentModes.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PAYMENT_MODE_NAME)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return userDefinedPaymentModes;
+    }
+
+    // Method to delete a user-defined payment mode
+    public boolean deletePaymentMode(String paymentModeName, int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int deletedRows = db.delete(TABLE_PAYMENT_MODES,
+                COLUMN_PAYMENT_MODE_NAME + " = ? AND " + COLUMN_PAYMENT_MODE_USER_ID + " = ?",
+                new String[]{paymentModeName, String.valueOf(userId)});
+
+        return deletedRows > 0; // Returns true if the payment mode was deleted
+    }
+
+
+    // Helper method to get paymentModeId by its name
+    private Integer getPaymentModeIdByName(String paymentModeName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_PAYMENT_MODE_ID + " FROM " + TABLE_PAYMENT_MODES
+                + " WHERE " + COLUMN_PAYMENT_MODE_NAME + " = ?", new String[]{paymentModeName});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int paymentModeId = cursor.getInt(0);
+            cursor.close();
+            return paymentModeId;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null; // Return null if the payment mode is not found
+    }
+
 
 
 
     // Transactions Table - CRUD Operations
 
     // Create a new transaction
-    // Create a new transaction
-    public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType) {
+    public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, @Nullable String paymentModeName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TRANSACTION_AMOUNT, amount);
@@ -579,58 +721,67 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TRANSACTION_USER_ID, userId); // Associate with logged-in user
         values.put(COLUMN_TRANSACTION_TYPE, transactionType); // Income or Expense
 
+        // If the transaction is an expense and a payment mode is provided
+        if (transactionType.equalsIgnoreCase("Expense") && paymentModeName != null) {
+            // Fetch paymentModeId from the payment_modes table
+            Integer paymentModeId = getPaymentModeIdByName(paymentModeName);
+            if (paymentModeId != null) {
+                values.put(COLUMN_TRANSACTION_PAYMENT_MODE_ID, paymentModeId); // Insert the paymentModeId
+            } else {
+                // Handle case where payment mode is not found
+                throw new IllegalArgumentException("Invalid payment mode: " + paymentModeName);
+            }
+        }
+
         return db.insert(TABLE_TRANSACTIONS, null, values);
     }
 
 
-    // Read a single transaction by ID
-    // Read a single transaction by ID
-    public TransactionModel readTransactionById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_TRANSACTIONS, new String[]{COLUMN_TRANSACTION_ID, COLUMN_TRANSACTION_AMOUNT, COLUMN_TRANSACTION_DATE, COLUMN_TRANSACTION_CATEGORY_ID, COLUMN_TRANSACTION_USER_ID, COLUMN_TRANSACTION_TYPE},
-                COLUMN_TRANSACTION_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
 
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-
-        TransactionModel transaction = new TransactionModel(
-                cursor.getInt(0),      // id
-                cursor.getString(1),   // amount
-                cursor.getString(2),   // date
-                cursor.getInt(3),      // categoryId
-                cursor.getString(4),      // userId
-                cursor.getString(5)    // type
-        );
-        cursor.close();
-        return transaction;
-    }
-
-
-    // Read all transactions
-    public List<TransactionModel> readAllTransactions() {
+    // Function to retrieve all transactions with category name from the database
+    // Function to retrieve all transactions for the logged-in user
+    @SuppressLint("Range")
+    public List<TransactionModel> getAllTransactions(int userId) {  // Add userId as a parameter
         List<TransactionModel> transactionList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTIONS;
+
+        // Query to get all transactions for the logged-in user with the category name
+        String selectQuery = "SELECT t.*, c." + COLUMN_CATEGORY_NAME + " FROM " + TABLE_TRANSACTIONS + " t"
+                + " INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID
+                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userId;  // Add userId filter
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
-                TransactionModel transaction = new TransactionModel(
-                        cursor.getInt(0),   // id
-                        cursor.getString(1), // amount
-                        cursor.getString(2), // date
-                        cursor.getInt(3),    // categoryId
-                        cursor.getString(4),    // userId
-                        cursor.getString(5)  // type
-                );
+                TransactionModel transaction = new TransactionModel();
+                transaction.setAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT))); // Amount
+                transaction.setDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE))); // Date
+                transaction.setCategoryId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID))); // Category ID
+                transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID))); // User ID
+                transaction.setType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE))); // Transaction Type
+                transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID))); // Payment Mode ID
+
+                // Get the category name from the categories table
+                String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+                transaction.setCategoryName(categoryName);
+
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
+        db.close();
+
         return transactionList;
     }
+
+
+
+
+
+
+
 
     // Update a transaction
     public int updateTransaction(int id, double amount, String date, int categoryId, String transactionType) {
