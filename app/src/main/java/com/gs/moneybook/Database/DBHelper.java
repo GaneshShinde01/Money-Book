@@ -740,7 +740,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Function to retrieve all transactions with category name from the database
     // Function to retrieve all transactions for the logged-in user
-    @SuppressLint("Range")
+   // @SuppressLint("Range")
     public List<TransactionModel> getAllTransactions(int userId) {  // Add userId as a parameter
         List<TransactionModel> transactionList = new ArrayList<>();
 
@@ -755,16 +755,16 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 TransactionModel transaction = new TransactionModel();
-                transaction.setAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT))); // Amount
-                transaction.setDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE))); // Date
-                transaction.setCategoryId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID))); // Category ID
-                transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID))); // User ID
-                transaction.setType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE))); // Transaction Type
-                transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID))); // Payment Mode ID
+                transaction.setAmount(cursor.getDouble(1)); // Amount
+                transaction.setDate(cursor.getString(2)); // Date
+                transaction.setCategoryId(cursor.getInt(3)); // Category ID
+                transaction.setUserId(cursor.getInt(4)); // User ID
+                transaction.setType(cursor.getString(5)); // Transaction Type
+                transaction.setPaymentModeId(cursor.getInt(6)); // Payment Mode ID
 
                 // Get the category name from the categories table
-                String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
-                transaction.setCategoryName(categoryName);
+               // String categoryName = cursor.getString(COLUMN_CATEGORY_NAME);
+                //transaction.setCategoryName(categoryName);
 
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
