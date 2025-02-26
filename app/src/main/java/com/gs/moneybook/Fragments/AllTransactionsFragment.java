@@ -51,7 +51,7 @@ public class AllTransactionsFragment extends Fragment {
         transactionAdapter = new TransactionAdapter(requireContext(), transactionList);
         binding.transactionRecyclerView.setAdapter(transactionAdapter);
 
-        transactionAdapter.notifyDataSetChanged();
+        //transactionAdapter.notifyDataSetChanged();
 
 
         return view;

@@ -740,41 +740,61 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Function to retrieve all transactions with category name from the database
     // Function to retrieve all transactions for the logged-in user
-   // @SuppressLint("Range")
-    public List<TransactionModel> getAllTransactions(int userId) {  // Add userId as a parameter
+    public List<TransactionModel> getAllTransactions(int userId) {
         List<TransactionModel> transactionList = new ArrayList<>();
 
         // Query to get all transactions for the logged-in user with the category name
-        String selectQuery = "SELECT t.*, c." + COLUMN_CATEGORY_NAME + " FROM " + TABLE_TRANSACTIONS + " t"
+        // Corrected: Select specific columns instead of using `t.*`
+        String selectQuery = "SELECT t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DATE + ", t." + COLUMN_TRANSACTION_CATEGORY_ID
+                + ", t." + COLUMN_TRANSACTION_USER_ID + ", t." + COLUMN_TRANSACTION_TYPE + ", t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID
+                + ", c." + COLUMN_CATEGORY_NAME + " FROM " + TABLE_TRANSACTIONS + " t"
                 + " INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID
                 + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userId;  // Add userId filter
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
+        // Check if the cursor has data
         if (cursor.moveToFirst()) {
             do {
+                // Create a new TransactionModel object for each row
                 TransactionModel transaction = new TransactionModel();
-                transaction.setAmount(cursor.getDouble(1)); // Amount
-                transaction.setDate(cursor.getString(2)); // Date
-                transaction.setCategoryId(cursor.getInt(3)); // Category ID
-                transaction.setUserId(cursor.getInt(4)); // User ID
-                transaction.setType(cursor.getString(5)); // Transaction Type
-                transaction.setPaymentModeId(cursor.getInt(6)); // Payment Mode ID
 
-                // Get the category name from the categories table
-               // String categoryName = cursor.getString(COLUMN_CATEGORY_NAME);
-                //transaction.setCategoryName(categoryName);
+                // Set values from the cursor (corrected: use column indices instead of hardcoded indexes)
+                // Get the amount using the correct column index
+                transaction.setAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT))); // Amount
 
+                // Get the transaction date
+                transaction.setDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE))); // Date
+
+                // Get the category ID
+                transaction.setCategoryId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID))); // Category ID
+
+                // Get the user ID
+                transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID))); // User ID
+
+                // Get the transaction type ("Income" or "Expense")
+                transaction.setType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE))); // Transaction Type
+
+                // Get the payment mode ID
+                transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID))); // Payment Mode ID
+
+                // Get the category name from the categories table (join result)
+                String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+                transaction.setCategoryName(categoryName);
+
+                // Add this transaction to the list
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
 
+        // Close the cursor and database to free up resources
         cursor.close();
         db.close();
 
-        return transactionList;
+        return transactionList;  // Return the list of transactions for the specified user
     }
+
 
 
 
