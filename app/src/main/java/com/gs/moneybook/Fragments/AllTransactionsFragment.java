@@ -58,11 +58,6 @@ public class AllTransactionsFragment extends Fragment {
         transactionAdapter = new TransactionAdapter(requireContext(), transactionList);
         binding.transactionRecyclerView.setAdapter(transactionAdapter);
 
-        //transactionAdapter.notifyDataSetChanged();
-
-
-//        ArrayAdapter<TransactionModel> adapter = new ArrayAdapter<>(requireContext(),R.layout.listview_item,transactionList);
-//        binding.lialltransactions.setAdapter(adapter);
 
         return view;
     }
