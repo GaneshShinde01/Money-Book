@@ -39,8 +39,7 @@ public class AllTransactionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_all_transactions, container, false);
+
         binding = FragmentAllTransactionsBinding.inflate(inflater,container,false);
         View view = binding.getRoot();
 
