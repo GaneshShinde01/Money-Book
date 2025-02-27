@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gs.moneybook.Model.TransactionModel;
 import com.gs.moneybook.R;
+import com.gs.moneybook.Utilities.DateUtils;
 
 import java.util.List;
 
@@ -40,26 +41,47 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
 
         TransactionModel transactionModel = transactionModelList.get(position);
-        // Set the transaction date and time
-        holder.transactionDate.setText(transactionModel.getDate());  // Date field
-        holder.transactionTime.setText(getTimeFromDate(transactionModel.getDate())); // Assume this method formats time
 
-        // Set the category name (You'll have to resolve the category ID to the actual name)
-        holder.categoryName.setText((transactionModel.getCategoryName()));  // Replace with actual category fetching
-
-        // Set the transaction amount and change color based on the type (Income/Expense)
-        double amount = transactionModel.getAmount();
-        if (transactionModel.getType().equals("Expense")) {
-            holder.transactionAmount.setText("-₹" + amount);
-            holder.transactionAmount.setTextColor(Color.RED);  // Red for Expense
+        // Safely parse and format the date using DateUtils
+        String date = transactionModel.getTransactionDate();
+        if (date != null && !date.isEmpty()) {
+            String[] dateTimeParts = date.split(" ");
+            if (dateTimeParts.length >= 2) {
+                // Format date as "dd/MM/yyyy" using DateUtils
+                String[] dateParts = dateTimeParts[0].split("-");
+                if (dateParts.length == 3) {
+                    int year = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]) - 1;  // Month is 0-based in Calendar
+                    int day = Integer.parseInt(dateParts[2]);
+                    holder.transactionDate.setText(DateUtils.formatDate(day, month, year));  // Format the date
+                } else {
+                    holder.transactionDate.setText(date);  // Fallback to raw date if format is wrong
+                }
+                holder.transactionTime.setText(dateTimeParts[1]);  // Set time part
+            } else {
+                holder.transactionDate.setText(date);  // Fallback to entire date if format is wrong
+                holder.transactionTime.setText("");   // Clear time in case of incorrect format
+            }
         } else {
-            holder.transactionAmount.setText("+₹" + amount);
-            holder.transactionAmount.setTextColor(Color.GREEN);  // Green for Income
+            holder.transactionDate.setText("N/A");
+            holder.transactionTime.setText("");
         }
 
+        // Set the category name
+        holder.categoryName.setText(transactionModel.getCategoryName() != null ? transactionModel.getCategoryName() : "Unknown");
 
-        holder.categoryIcon.setImageResource(R.drawable.check);
+        // Set transaction amount and color based on type
+        double amount = transactionModel.getTransactionAmount();
+        if ("Expense".equals(transactionModel.getTransactionType())) {
+            holder.transactionAmount.setText("-₹" + amount);
+            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.expense_red));  // Use resources for colors
+        } else {
+            holder.transactionAmount.setText("+₹" + amount);
+            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.income_green));  // Use resources for colors
+        }
 
+        // Comment out the category icon for now
+        // holder.categoryIcon.setImageResource(R.drawable.check);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.gs.moneybook.Database;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -580,81 +581,63 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
-    // Function to retrieve all transactions with category name from the database
-// Function to retrieve all transactions for the logged-in user
-    public List<TransactionModel> getAllTransactions(int userId) {
-        List<TransactionModel> transactionList = new ArrayList<>();
-
-        // Query to get all transactions for the logged-in user with the category name
-        String selectQuery = "SELECT t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DATE + ", t." + COLUMN_TRANSACTION_CATEGORY_ID
-                + ", t." + COLUMN_TRANSACTION_USER_ID + ", t." + COLUMN_TRANSACTION_TYPE + ", t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID
-                + ", c." + COLUMN_CATEGORY_NAME + " FROM " + TABLE_TRANSACTIONS + " t"
-                + " INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID
-                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = ?";  // Using parameterized query to avoid SQL injection
-
+    // Function to get transaction data
+// Function to get transaction data
+    public List<TransactionModel> getTransactions(int userId) {
+        List<TransactionModel> transactionsList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
 
-        // Use rawQuery with selection arguments to safely bind userId
-        Cursor cursor = db.rawQuery(selectQuery, new String[] { String.valueOf(userId) });
+        try {
+            // Query to retrieve transaction data including related tables for category, user, and payment mode
+            String selectQuery = "SELECT " +
+                    "t." + COLUMN_TRANSACTION_ID + ", " +
+                    "t." + COLUMN_TRANSACTION_AMOUNT + ", " +
+                    "t." + COLUMN_TRANSACTION_DATE + ", " +
+                    "t." + COLUMN_TRANSACTION_TYPE + ", " +
+                    "c." + COLUMN_CATEGORY_NAME + " AS categoryName " +
+                    "FROM " + TABLE_TRANSACTIONS + " t " +
+                    "INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID + " " +
+                    "WHERE t." + COLUMN_TRANSACTION_USER_ID + " = ?";
 
-        // Check if the cursor has data
-        if (cursor.moveToFirst()) {
-            do {
-                // Create a new TransactionModel object for each row
-                TransactionModel transaction = new TransactionModel();
+            // Execute the query
+            cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
 
-                // Get the amount using the correct column index
-                int amountIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT);
-                if (amountIndex != -1) {
-                    transaction.setAmount(cursor.getDouble(amountIndex));
-                }
+            // Get the column indexes to avoid calling getColumnIndexOrThrow repeatedly
+            int transactionIdIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_ID);
+            int transactionAmountIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
+            int transactionDateIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
+            int transactionTypeIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_TYPE);
+            int categoryNameIdx = cursor.getColumnIndexOrThrow("categoryName");
 
-                // Get the transaction date
-                int dateIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_DATE);
-                if (dateIndex != -1) {
-                    transaction.setDate(cursor.getString(dateIndex));
-                }
+            // Iterate through the cursor and build the list
+            if (cursor.moveToFirst()) {
+                do {
+                    TransactionModel transaction = new TransactionModel();
 
-                // Get the category ID
-                int categoryIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID);
-                if (categoryIdIndex != -1) {
-                    transaction.setCategoryId(cursor.getInt(categoryIdIndex));
-                }
+                    // Set values to TransactionModel
+                    transaction.setTransactionId(cursor.getInt(transactionIdIdx));
+                    transaction.setTransactionAmount(cursor.getDouble(transactionAmountIdx));
+                    transaction.setTransactionDate(cursor.getString(transactionDateIdx));
+                    transaction.setTransactionType(cursor.getString(transactionTypeIdx));
+                    transaction.setCategoryName(cursor.getString(categoryNameIdx));
 
-                // Get the user ID
-                int userIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID);
-                if (userIdIndex != -1) {
-                    transaction.setUserId(cursor.getInt(userIdIndex));
-                }
-
-                // Get the transaction type ("Income" or "Expense")
-                int typeIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE);
-                if (typeIndex != -1) {
-                    transaction.setType(cursor.getString(typeIndex));
-                }
-
-                // Get the payment mode ID
-                int paymentModeIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID);
-                if (paymentModeIdIndex != -1) {
-                    transaction.setPaymentModeId(cursor.getInt(paymentModeIdIndex));
-                }
-
-                // Get the category name from the categories table (join result)
-                int categoryNameIndex = cursor.getColumnIndex(COLUMN_CATEGORY_NAME);
-                if (categoryNameIndex != -1) {
-                    transaction.setCategoryName(cursor.getString(categoryNameIndex));
-                }
-
-                // Add this transaction to the list
-                transactionList.add(transaction);
-            } while (cursor.moveToNext());
+                    // Add to list
+                    transactionsList.add(transaction);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();  // Handle or log exception
+        } finally {
+            // Ensure cursor is closed
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+            db.close();  // Close the database
         }
 
-        // Close the cursor and database to free up resources
-        cursor.close();
-
-        return transactionList;  // Return the list of transactions for the specified user
+        return transactionsList;
     }
+
 
 }

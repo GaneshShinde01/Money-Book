@@ -28,6 +28,12 @@
         android:scrollbars="vertical"
         android:layout_marginBottom="16dp" />
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lialltransactions"
+        android:visibility="gone"
+        />
 
 
 </LinearLayout>
