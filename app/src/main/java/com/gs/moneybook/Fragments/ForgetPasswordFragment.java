@@ -30,7 +30,7 @@ public class ForgetPasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentForgetPasswordBinding.inflate(inflater, container, false);
-        dbHelper = new DBHelper(getContext());
+        dbHelper = DBHelper.getInstance(getContext());
         calendar = Calendar.getInstance();
 
         // Set up the DatePicker for DOB

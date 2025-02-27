@@ -44,7 +44,7 @@ public class RegisterFragment extends Fragment {
         View view = binding.getRoot();
 
         // Initialize the database helper
-        DBHelper = new DBHelper(requireContext());
+        DBHelper = DBHelper.getInstance(getContext());
 
         // Hardcoded list of currencies
         List<String> currencyList = Arrays.asList(

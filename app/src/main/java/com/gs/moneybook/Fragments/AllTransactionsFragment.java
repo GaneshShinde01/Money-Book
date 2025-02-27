@@ -40,7 +40,7 @@ public class AllTransactionsFragment extends Fragment {
         View view = binding.getRoot();
 
         binding.transactionRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        dbHelper = new DBHelper(requireContext());
+        dbHelper = DBHelper.getInstance(requireContext());
 
         // Fetch transactions from database
         List<TransactionModel> transactionList = dbHelper.getAllTransactions(loggedInUserId);

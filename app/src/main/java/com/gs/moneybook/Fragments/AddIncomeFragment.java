@@ -40,7 +40,7 @@ public class AddIncomeFragment extends Fragment {
         binding = FragmentAddIncomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        dbHelper = new DBHelper(requireContext());
+        dbHelper = DBHelper.getInstance(requireContext());
 
         // Load categories for the logged-in user from the database
         loadCategories();

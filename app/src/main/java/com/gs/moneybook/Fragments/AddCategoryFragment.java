@@ -33,7 +33,7 @@ public class AddCategoryFragment extends Fragment {
         binding = FragmentAddCategoryBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        dbHelper = new DBHelper(requireContext());
+        dbHelper = DBHelper.getInstance(    requireContext());
 
         // Set up the Spinner for category types
         setupCategoryTypeSpinner();

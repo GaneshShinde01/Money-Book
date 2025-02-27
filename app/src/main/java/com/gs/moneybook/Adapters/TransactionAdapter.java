@@ -58,7 +58,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         }
 
 
-
+        holder.categoryIcon.setImageResource(R.drawable.check);
 
     }
 

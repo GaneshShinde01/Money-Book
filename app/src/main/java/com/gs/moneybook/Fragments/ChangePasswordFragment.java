@@ -27,7 +27,7 @@ public class ChangePasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentChangePasswordBinding.inflate(inflater, container, false);
-        dbHelper = new DBHelper(getContext());
+        dbHelper = DBHelper.getInstance(getContext());
 
         // Get the email passed from the ForgetPasswordFragment
         if (getArguments() != null) {

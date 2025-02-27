@@ -21,6 +21,17 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "MoneyBook.db";
     private static final int DATABASE_VERSION = 1;
 
+    // Singleton instance
+    private static DBHelper instance;
+
+    // Static method to get the single instance of DBHelper
+    public static synchronized DBHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DBHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
     // Table Names
     private static final String TABLE_USERS = "users";
     private static final String TABLE_CATEGORIES = "categories";
@@ -276,56 +287,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public UserModel getUserById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_USERS,
-                new String[]{COLUMN_USER_ID, COLUMN_USER_FULL_NAME, COLUMN_USER_MOBILE_NUMBER, COLUMN_USER_EMAIL,
-                        COLUMN_USER_OCCUPATION, COLUMN_USER_PASSWORD, COLUMN_USER_DOB, COLUMN_USER_MONTHLY_INCOME,
-                        COLUMN_USER_SAVINGS_GOAL, COLUMN_USER_CURRENCY},
-                COLUMN_USER_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            UserModel user = new UserModel(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_FULL_NAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_MOBILE_NUMBER)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_EMAIL)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_OCCUPATION)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_PASSWORD)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_DOB)),
-                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_USER_MONTHLY_INCOME)),
-                    cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_USER_SAVINGS_GOAL)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_CURRENCY))
-            );
-            cursor.close();
-            return user;
-        }
-        return null;
-    }
-
-    public int updateUser(UserModel user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_USER_FULL_NAME, user.getFullName());
-        values.put(COLUMN_USER_MOBILE_NUMBER, user.getMobileNumber());
-        values.put(COLUMN_USER_EMAIL, user.getEmail());
-        values.put(COLUMN_USER_OCCUPATION, user.getOccupation());
-        values.put(COLUMN_USER_PASSWORD, user.getPassword());
-        values.put(COLUMN_USER_DOB, user.getDob());
-        values.put(COLUMN_USER_MONTHLY_INCOME, user.getMonthlyIncome());
-        values.put(COLUMN_USER_SAVINGS_GOAL, user.getSavingsGoal());
-        values.put(COLUMN_USER_CURRENCY, user.getCurrency());
-        return db.update(TABLE_USERS, values, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(user.getId())});
-    }
-
-    public void deleteUser(int userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USERS, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-        db.close();
-    }
-
-
     // Helper method to insert a category
     public boolean insertCategory(SQLiteDatabase db, String categoryName, String categoryType, int userId) {
         ContentValues values = new ContentValues();
@@ -344,91 +305,28 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;  // Return true if insertion is successful
         }
     }
+    public void defaultCategories(SQLiteDatabase db) {
+        // Define categories as arrays
+        String[] expenseCategories = {"Groceries", "Rent", "Utilities", "Transport", "Entertainment", "Dining Out", "Health", "Insurance", "Shopping", "Bills"};
+        String[] incomeCategories = {"Salary", "Investment", "Freelancing", "Gifts", "Interest", "Rental Income"};
 
-    public void defaultCategories(SQLiteDatabase db){
-        // Expense categories
+        // Insert expense categories
+        for (String category : expenseCategories) {
+            insertCategory(db, category, "Expense");
+        }
+
+        // Insert income categories
+        for (String category : incomeCategories) {
+            insertCategory(db, category, "Income");
+        }
+    }
+
+    private void insertCategory(SQLiteDatabase db, String name, String type) {
         db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Groceries', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Rent', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Utilities', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Transport', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Entertainment', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Dining Out', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Health', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Insurance', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Shopping', 'Expense', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Bills', 'Expense', -1)");
-
-        // Income categories
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Salary', 'Income', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Investment', 'Income', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Freelancing', 'Income', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Gifts', 'Income', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Interest', 'Income', -1)");
-
-        db.execSQL("INSERT INTO " + TABLE_CATEGORIES + " ("
-                + COLUMN_CATEGORY_NAME + ", "
-                + COLUMN_CATEGORY_TYPE + ", "
-                + COLUMN_CATEGORY_USER_ID + ") VALUES ('Rental Income', 'Income', -1)");
-
-
+                        + COLUMN_CATEGORY_NAME + ", "
+                        + COLUMN_CATEGORY_TYPE + ", "
+                        + COLUMN_CATEGORY_USER_ID + ") VALUES (?, ?, -1)",
+                new Object[]{name, type});
     }
 
 
@@ -454,30 +352,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-
-/*    // Method to get a category by ID for a specific user
-    public CategoryModel getCategoryById(long id, int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_CATEGORIES,
-                new String[]{COLUMN_CATEGORY_ID, COLUMN_CATEGORY_NAME, COLUMN_CATEGORY_TYPE},
-                COLUMN_CATEGORY_ID + "=? AND " + COLUMN_CATEGORY_USER_ID + "=?",
-                new String[]{String.valueOf(id), String.valueOf(userId)}, null, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            CategoryModel category = new CategoryModel(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_TYPE))
-            );
-            cursor.close();
-            return category;
-        }
-
-        return null; // Return null if no record is found
-    }*/
-
-
     public List<String> getCategoriesByTypeAndUserId(String categoryType, int userId) {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -493,26 +367,10 @@ public class DBHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
 
         return categories;
     }
 
-
-    public int getCategoryIdByName(String categoryName, int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT " + COLUMN_CATEGORY_ID + " FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_NAME + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{categoryName, String.valueOf(userId)});
-        int categoryId = -1;
-
-        if (cursor.moveToFirst()) {
-            categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("categoryId"));
-        }
-        cursor.close();
-        db.close();
-
-        return categoryId;
-    }
 
 
     public List<String> getAllCategories(int userId) {
@@ -553,21 +411,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return categories;
     }
-
-
-
-/*
-    public int updateCategory(CategoryModel category, int userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_CATEGORY_NAME, category.getCategoryName());
-        values.put(COLUMN_CATEGORY_TYPE, category.getCategoryType()); // Update category type as well
-
-        return db.update(TABLE_CATEGORIES, values, COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_CATEGORY_USER_ID + " = ?",
-                new String[]{String.valueOf(category.getId()), String.valueOf(userId)});
-    }
-*/
 
 
     public List<String> getUserDefinedCategories(int userId) {
@@ -739,20 +582,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // Function to retrieve all transactions with category name from the database
-    // Function to retrieve all transactions for the logged-in user
+// Function to retrieve all transactions for the logged-in user
     public List<TransactionModel> getAllTransactions(int userId) {
         List<TransactionModel> transactionList = new ArrayList<>();
 
         // Query to get all transactions for the logged-in user with the category name
-        // Corrected: Select specific columns instead of using `t.*`
         String selectQuery = "SELECT t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DATE + ", t." + COLUMN_TRANSACTION_CATEGORY_ID
                 + ", t." + COLUMN_TRANSACTION_USER_ID + ", t." + COLUMN_TRANSACTION_TYPE + ", t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID
                 + ", c." + COLUMN_CATEGORY_NAME + " FROM " + TABLE_TRANSACTIONS + " t"
                 + " INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID
-                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userId;  // Add userId filter
+                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = ?";  // Using parameterized query to avoid SQL injection
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Use rawQuery with selection arguments to safely bind userId
+        Cursor cursor = db.rawQuery(selectQuery, new String[] { String.valueOf(userId) });
 
         // Check if the cursor has data
         if (cursor.moveToFirst()) {
@@ -760,28 +604,47 @@ public class DBHelper extends SQLiteOpenHelper {
                 // Create a new TransactionModel object for each row
                 TransactionModel transaction = new TransactionModel();
 
-                // Set values from the cursor (corrected: use column indices instead of hardcoded indexes)
                 // Get the amount using the correct column index
-                transaction.setAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT))); // Amount
+                int amountIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT);
+                if (amountIndex != -1) {
+                    transaction.setAmount(cursor.getDouble(amountIndex));
+                }
 
                 // Get the transaction date
-                transaction.setDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE))); // Date
+                int dateIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_DATE);
+                if (dateIndex != -1) {
+                    transaction.setDate(cursor.getString(dateIndex));
+                }
 
                 // Get the category ID
-                transaction.setCategoryId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID))); // Category ID
+                int categoryIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID);
+                if (categoryIdIndex != -1) {
+                    transaction.setCategoryId(cursor.getInt(categoryIdIndex));
+                }
 
                 // Get the user ID
-                transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID))); // User ID
+                int userIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID);
+                if (userIdIndex != -1) {
+                    transaction.setUserId(cursor.getInt(userIdIndex));
+                }
 
                 // Get the transaction type ("Income" or "Expense")
-                transaction.setType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE))); // Transaction Type
+                int typeIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE);
+                if (typeIndex != -1) {
+                    transaction.setType(cursor.getString(typeIndex));
+                }
 
                 // Get the payment mode ID
-                transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID))); // Payment Mode ID
+                int paymentModeIdIndex = cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID);
+                if (paymentModeIdIndex != -1) {
+                    transaction.setPaymentModeId(cursor.getInt(paymentModeIdIndex));
+                }
 
                 // Get the category name from the categories table (join result)
-                String categoryName = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
-                transaction.setCategoryName(categoryName);
+                int categoryNameIndex = cursor.getColumnIndex(COLUMN_CATEGORY_NAME);
+                if (categoryNameIndex != -1) {
+                    transaction.setCategoryName(cursor.getString(categoryNameIndex));
+                }
 
                 // Add this transaction to the list
                 transactionList.add(transaction);
@@ -790,370 +653,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Close the cursor and database to free up resources
         cursor.close();
-        db.close();
 
         return transactionList;  // Return the list of transactions for the specified user
-    }
-
-
-
-
-
-
-
-
-
-    // Update a transaction
-    public int updateTransaction(int id, double amount, String date, int categoryId, String transactionType) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TRANSACTION_AMOUNT, amount);
-        values.put(COLUMN_TRANSACTION_DATE, date);
-        values.put(COLUMN_TRANSACTION_CATEGORY_ID, categoryId);
-        values.put(COLUMN_TRANSACTION_TYPE, transactionType); // Income or Expense
-
-        return db.update(TABLE_TRANSACTIONS, values, COLUMN_TRANSACTION_ID + "=?", new String[]{String.valueOf(id)});
-    }
-
-
-    // Delete a transaction
-    public void deleteTransaction(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TRANSACTIONS, COLUMN_TRANSACTION_ID + "=?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-
-    // curd for budget table
-
-    // Create a new budget
-    public long createBudget(BudgetModel budget) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_BUDGET_AMOUNT, budget.getAmount());
-        values.put(COLUMN_BUDGET_START_DATE, budget.getStartDate());
-        values.put(COLUMN_BUDGET_END_DATE, budget.getEndDate());
-        values.put(COLUMN_BUDGET_CATEGORY, budget.getCategory());
-        values.put(COLUMN_BUDGET_TYPE, budget.getBudgetType());
-
-        // Insert row
-        long id = db.insert(TABLE_BUDGETS, null, values);
-        db.close();
-        return id;
-    }
-    // Read a budget by ID
-    public BudgetModel readBudgetById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_BUDGETS, new String[]{COLUMN_BUDGET_ID, COLUMN_BUDGET_AMOUNT, COLUMN_BUDGET_START_DATE, COLUMN_BUDGET_END_DATE, COLUMN_BUDGET_CATEGORY, COLUMN_BUDGET_TYPE},
-                COLUMN_BUDGET_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-
-        BudgetModel budget = new BudgetModel(
-                cursor.getInt(0),    // id
-                cursor.getDouble(1), // amount
-                cursor.getString(2), // startDate
-                cursor.getString(3), // endDate
-                cursor.getString(4), // category
-                cursor.getString(5)  // budgetType
-        );
-        cursor.close();
-        return budget;
-    }
-    // Read all budgets
-    public List<BudgetModel> readAllBudgets() {
-        List<BudgetModel> budgetList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_BUDGETS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                BudgetModel budget = new BudgetModel(
-                        cursor.getInt(0),    // id
-                        cursor.getDouble(1), // amount
-                        cursor.getString(2), // startDate
-                        cursor.getString(3), // endDate
-                        cursor.getString(4), // category
-                        cursor.getString(5)  // budgetType
-                );
-                budgetList.add(budget);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return budgetList;
-    }
-    // Update an existing budget
-    public int updateBudget(BudgetModel budget) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_BUDGET_AMOUNT, budget.getAmount());
-        values.put(COLUMN_BUDGET_START_DATE, budget.getStartDate());
-        values.put(COLUMN_BUDGET_END_DATE, budget.getEndDate());
-        values.put(COLUMN_BUDGET_CATEGORY, budget.getCategory());
-        values.put(COLUMN_BUDGET_TYPE, budget.getBudgetType());
-
-        // Updating row
-        return db.update(TABLE_BUDGETS, values, COLUMN_BUDGET_ID + " = ?",
-                new String[]{String.valueOf(budget.getId())});
-    }
-    // Delete a budget by ID
-    public void deleteBudget(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_BUDGETS, COLUMN_BUDGET_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-
-    //curd for recurring transaction
-
-    // Create a new recurring transaction
-    public long createRecurringTransaction(RecurringTransactionModel transaction) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_RECURRING_TRANSACTION_NAME, transaction.getTransactionName());
-        values.put(COLUMN_RECURRING_TRANSACTION_AMOUNT, transaction.getAmount());
-        values.put(COLUMN_RECURRING_TRANSACTION_DATE, transaction.getTransactionDate());
-        values.put(COLUMN_RECURRING_TRANSACTION_FREQUENCY, transaction.getFrequency());
-        values.put(COLUMN_RECURRING_TRANSACTION_CATEGORY, transaction.getCategory());
-        values.put(COLUMN_RECURRING_TRANSACTION_TYPE, transaction.getTransactionType());
-
-        // Insert row
-        long id = db.insert(TABLE_RECURRING_TRANSACTIONS, null, values);
-        db.close();
-        return id;
-    }
-    // Read a recurring transaction by ID
-    public RecurringTransactionModel readRecurringTransactionById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_RECURRING_TRANSACTIONS, new String[]{COLUMN_RECURRING_TRANSACTION_ID, COLUMN_RECURRING_TRANSACTION_NAME, COLUMN_RECURRING_TRANSACTION_AMOUNT, COLUMN_RECURRING_TRANSACTION_DATE, COLUMN_RECURRING_TRANSACTION_FREQUENCY, COLUMN_RECURRING_TRANSACTION_CATEGORY, COLUMN_RECURRING_TRANSACTION_TYPE},
-                COLUMN_RECURRING_TRANSACTION_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-
-        RecurringTransactionModel transaction = new RecurringTransactionModel(
-                cursor.getInt(0),    // id
-                cursor.getString(1), // transactionName
-                cursor.getDouble(2), // amount
-                cursor.getString(3), // transactionDate
-                cursor.getString(4), // frequency
-                cursor.getString(5), // category
-                cursor.getString(6)  // transactionType
-        );
-        cursor.close();
-        return transaction;
-    }
-    // Read all recurring transactions
-    public List<RecurringTransactionModel> readAllRecurringTransactions() {
-        List<RecurringTransactionModel> transactionList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_RECURRING_TRANSACTIONS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                RecurringTransactionModel transaction = new RecurringTransactionModel(
-                        cursor.getInt(0),    // id
-                        cursor.getString(1), // transactionName
-                        cursor.getDouble(2), // amount
-                        cursor.getString(3), // transactionDate
-                        cursor.getString(4), // frequency
-                        cursor.getString(5), // category
-                        cursor.getString(6)  // transactionType
-                );
-                transactionList.add(transaction);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return transactionList;
-    }
-    // Update an existing recurring transaction
-    public int updateRecurringTransaction(RecurringTransactionModel transaction) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_RECURRING_TRANSACTION_NAME, transaction.getTransactionName());
-        values.put(COLUMN_RECURRING_TRANSACTION_AMOUNT, transaction.getAmount());
-        values.put(COLUMN_RECURRING_TRANSACTION_DATE, transaction.getTransactionDate());
-        values.put(COLUMN_RECURRING_TRANSACTION_FREQUENCY, transaction.getFrequency());
-        values.put(COLUMN_RECURRING_TRANSACTION_CATEGORY, transaction.getCategory());
-        values.put(COLUMN_RECURRING_TRANSACTION_TYPE, transaction.getTransactionType());
-
-        // Updating row
-        return db.update(TABLE_RECURRING_TRANSACTIONS, values, COLUMN_RECURRING_TRANSACTION_ID + " = ?",
-                new String[]{String.valueOf(transaction.getId())});
-    }
-    // Delete a recurring transaction by ID
-    public void deleteRecurringTransaction(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_RECURRING_TRANSACTIONS, COLUMN_RECURRING_TRANSACTION_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-
-    //curd for savings goal table
-
-    // Insert a new savings goal
-    public long createSavingsGoal(SavingsGoalModel savingsGoal) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("goalName", savingsGoal.getGoalName());
-        values.put("targetAmount", savingsGoal.getTargetAmount());
-        values.put("currentAmount", savingsGoal.getCurrentAmount());
-        values.put("goalDeadline", savingsGoal.getGoalDeadline());
-        values.put("status", savingsGoal.getStatus());
-
-        // Inserting Row
-        long id = db.insert(TABLE_SAVINGS_GOALS, null, values);
-        db.close();
-        return id;
-    }
-    // Read a single savings goal by ID
-    public SavingsGoalModel getSavingsGoalById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_SAVINGS_GOALS, new String[]{"id", "goalName", "targetAmount", "currentAmount", "goalDeadline", "status"},
-                "id=?", new String[]{String.valueOf(id)}, null, null, null);
-
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        SavingsGoalModel savingsGoal = new SavingsGoalModel(
-                cursor.getInt(0),    // id
-                cursor.getDouble(1), // goalName
-                cursor.getDouble(2), // targetAmount
-                cursor.getString(3), // currentAmount
-                cursor.getString(4), // goalDeadline
-                cursor.getString(5)  // status
-        );
-        cursor.close();
-        return savingsGoal;
-    }
-    // Read all savings goals
-    public List<SavingsGoalModel> getAllSavingsGoals() {
-        List<SavingsGoalModel> savingsGoalList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_SAVINGS_GOALS;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                SavingsGoalModel savingsGoal = new SavingsGoalModel(
-                        cursor.getInt(0),    // id
-                        cursor.getDouble(1), // goalName
-                        cursor.getDouble(2), // targetAmount
-                        cursor.getString(3), // currentAmount
-                        cursor.getString(4), // goalDeadline
-                        cursor.getString(5)  // status
-                );
-                savingsGoalList.add(savingsGoal);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return savingsGoalList;
-    }
-
-    // Update a savings goal
-    public int updateSavingsGoal(SavingsGoalModel savingsGoal) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("goalName", savingsGoal.getGoalName());
-        values.put("targetAmount", savingsGoal.getTargetAmount());
-        values.put("currentAmount", savingsGoal.getCurrentAmount());
-        values.put("goalDeadline", savingsGoal.getGoalDeadline());
-        values.put("status", savingsGoal.getStatus());
-
-        // Updating row
-        return db.update(TABLE_SAVINGS_GOALS, values, "id = ?",
-                new String[]{String.valueOf(savingsGoal.getId())});
-    }
-    // Delete a savings goal
-    public void deleteSavingsGoal(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SAVINGS_GOALS, "id = ?",
-                new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-
-    //curd operations for the Reminder table
-
-    // Insert a new reminder
-    public long createReminder(RemindersModel reminder) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("userId", reminder.getUserId());
-        values.put("reminderDate", reminder.getReminderDate());
-        values.put("description", reminder.getDescription());
-
-        // Inserting Row
-        long id = db.insert(TABLE_REMINDERS, null, values);
-        db.close();
-        return id;
-    }
-    // Read a single reminder by ID
-    public RemindersModel getReminderById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_REMINDERS, new String[]{"id", "userId", "reminderDate", "description"},
-                "id=?", new String[]{String.valueOf(id)}, null, null, null);
-
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        RemindersModel reminder = new RemindersModel(
-                cursor.getInt(0),    // id
-                cursor.getInt(1),    // userId
-                cursor.getString(2), // reminderDate
-                cursor.getString(3)  // description
-        );
-        cursor.close();
-        return reminder;
-    }
-    // Read all reminders
-    public List<RemindersModel> getAllReminders() {
-        List<RemindersModel> reminderList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_REMINDERS;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                RemindersModel reminder = new RemindersModel(
-                        cursor.getInt(0),    // id
-                        cursor.getInt(1),    // userId
-                        cursor.getString(2), // reminderDate
-                        cursor.getString(3)  // description
-                );
-                reminderList.add(reminder);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return reminderList;
-    }
-    // Update a reminder
-    public int updateReminder(RemindersModel reminder) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("userId", reminder.getUserId());
-        values.put("reminderDate", reminder.getReminderDate());
-        values.put("description", reminder.getDescription());
-
-        // Updating row
-        return db.update(TABLE_REMINDERS, values, "id = ?",
-                new String[]{String.valueOf(reminder.getId())});
-    }
-    // Delete a reminder
-    public void deleteReminder(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_REMINDERS, "id = ?",
-                new String[]{String.valueOf(id)});
-        db.close();
     }
 
 }

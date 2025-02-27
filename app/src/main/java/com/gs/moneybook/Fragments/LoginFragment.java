@@ -35,7 +35,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment using ViewBinding
         binding = FragmentLoginBinding.inflate(inflater, container, false);
-        dbHelper = new DBHelper(getContext());
+        dbHelper = DBHelper.getInstance(getContext());
 
         // Set up the login button click listener
         binding.btnLogin.setOnClickListener(v -> {

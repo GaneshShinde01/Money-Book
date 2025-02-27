@@ -35,7 +35,7 @@ public class AddPaymentModeFragment extends Fragment {
         binding = FragmentAddPaymentModeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        dbHelper = new DBHelper(requireContext());
+        dbHelper = DBHelper.getInstance(requireContext());
 
         // Load and display the list of payment modes
         loadPaymentModes();
