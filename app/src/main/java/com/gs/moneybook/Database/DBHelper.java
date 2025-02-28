@@ -108,16 +108,15 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_TRANSACTIONS = "CREATE TABLE " + TABLE_TRANSACTIONS + "("
             + COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_TRANSACTION_AMOUNT + " REAL NOT NULL,"
-            + COLUMN_TRANSACTION_DATE + " TEXT NOT NULL,"  // Consider changing TEXT to DATETIME for better date handling
+            + COLUMN_TRANSACTION_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP," // Changed to DATETIME
             + COLUMN_TRANSACTION_CATEGORY_ID + " INTEGER NOT NULL,"
             + COLUMN_TRANSACTION_USER_ID + " INTEGER NOT NULL,"
-            + COLUMN_TRANSACTION_TYPE + " TEXT NOT NULL,"  // Type will be "Income" or "Expense"
-            + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " INTEGER,"  // Foreign key to reference the payment mode
+            + COLUMN_TRANSACTION_TYPE + " TEXT NOT NULL,"
+            + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " INTEGER,"
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "),"
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "),"
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ") REFERENCES " + TABLE_PAYMENT_MODES + "(" + COLUMN_PAYMENT_MODE_ID + ")"
             + ")";
-
 
     // Create Budgets Table
     private static final String COLUMN_BUDGET_ID = "budgetId";
@@ -237,7 +236,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM users WHERE email = ?";
         Cursor cursor = db.rawQuery(query, new String[]{email});
         boolean exists = cursor.getCount() > 0;
-        cursor.close();
+        ////cursor.close();
         return exists;
     }
 
@@ -259,11 +258,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_USER_SAVINGS_GOAL)),
                     cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_CURRENCY))
             );
-            cursor.close();
+            //cursor.close();
             return user;
         }
 
-        cursor.close();
+        //cursor.close();
         return null; // No user found
     }
 
@@ -273,7 +272,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM users WHERE email = ? AND dob = ?";
         Cursor cursor = db.rawQuery(query, new String[]{email, dob});
         boolean isDobCorrect = cursor.getCount() > 0;
-        cursor.close();
+        //cursor.close();
         return isDobCorrect;
     }
 
@@ -285,7 +284,6 @@ public class DBHelper extends SQLiteOpenHelper {
         int rowsUpdated = db.update("users", contentValues, "email = ?", new String[]{email});
         return rowsUpdated > 0;
     }
-
 
 
     // Helper method to insert a category
@@ -306,6 +304,7 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;  // Return true if insertion is successful
         }
     }
+
     public void defaultCategories(SQLiteDatabase db) {
         // Define categories as arrays
         String[] expenseCategories = {"Groceries", "Rent", "Utilities", "Transport", "Entertainment", "Dining Out", "Health", "Insurance", "Shopping", "Bills"};
@@ -346,7 +345,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         } finally {
             if (cursor != null) {
-                cursor.close();
+                //cursor.close();
             }
         }
         return false;
@@ -367,11 +366,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 categories.add(categoryName);
             } while (cursor.moveToNext());
         }
-        cursor.close();
+        //cursor.close();
 
         return categories;
     }
-
 
 
     public List<String> getAllCategories(int userId) {
@@ -405,7 +403,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.e("DBHelper", "Error fetching categories: " + e.getMessage());
         } finally {
             if (cursor != null) {
-                cursor.close();
+                //cursor.close();
             }
             // Avoid closing the database connection here as it might be reused in the session
         }
@@ -423,7 +421,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 userCategories.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
-        cursor.close();
+        //cursor.close();
         return userCategories;
     }
 
@@ -474,7 +472,7 @@ public class DBHelper extends SQLiteOpenHelper {
         );
 
         boolean exists = cursor.getCount() > 0;
-        cursor.close();
+        //cursor.close();
         return exists;
     }
 
@@ -494,10 +492,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 paymentModes.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
-        cursor.close();
+        //cursor.close();
         return paymentModes;
     }
-
 
 
     // Method to get user-defined payment modes for a specific user
@@ -515,7 +512,7 @@ public class DBHelper extends SQLiteOpenHelper {
             do {
                 userDefinedPaymentModes.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PAYMENT_MODE_NAME)));
             } while (cursor.moveToNext());
-            cursor.close();
+            //cursor.close();
         }
 
         return userDefinedPaymentModes;
@@ -540,22 +537,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
             int paymentModeId = cursor.getInt(0);
-            cursor.close();
+            //cursor.close();
             return paymentModeId;
         }
 
         if (cursor != null) {
-            cursor.close();
+            //cursor.close();
         }
         return null; // Return null if the payment mode is not found
     }
 
 
-
-
     // Transactions Table - CRUD Operations
 
-    // Create a new transaction
+   /* // Create a new transaction
     public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, @Nullable String paymentModeName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -579,65 +574,126 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return db.insert(TABLE_TRANSACTIONS, null, values);
     }
+*/
+   public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, String paymentModeName) {
+       SQLiteDatabase db = this.getWritableDatabase();
+       ContentValues values = new ContentValues();
+
+       try {
+           values.put(COLUMN_TRANSACTION_AMOUNT, amount);
+           values.put(COLUMN_TRANSACTION_DATE, date);
+           values.put(COLUMN_TRANSACTION_CATEGORY_ID, categoryId);
+           values.put(COLUMN_TRANSACTION_USER_ID, userId);
+           values.put(COLUMN_TRANSACTION_TYPE, transactionType);
+
+           Integer paymentModeId = getPaymentModeIdByName(paymentModeName); // Get payment mode ID
+
+           if (paymentModeId != null) {
+               values.put(COLUMN_TRANSACTION_PAYMENT_MODE_ID, paymentModeId);
+           } else {
+               Log.e("DBHelper", "Invalid payment mode: " + paymentModeName);
+               return -1; // Return -1 to indicate failure
+           }
+
+           long result = db.insert(TABLE_TRANSACTIONS, null, values);
+
+           if (result == -1) {
+               Log.e("DBHelper", "Error inserting transaction: " + values.toString());
+           } else {
+               // Log the inserted data
+               Log.d("DBHelper", "Transaction inserted successfully: userId=" + userId + ", amount=" + amount + ", date=" + date + ", categoryId=" + categoryId + ", type=" + transactionType + ", paymentMode=" + paymentModeName + ", result=" + result);
+
+               // Fetch and log the inserted row's data
+               Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_ID + " = ?", new String[]{String.valueOf(result)});
+               if (cursor != null && cursor.moveToFirst()) {
+                   StringBuilder logMessage = new StringBuilder("Inserted Transaction Details: ");
+                   for (int i = 0; i < cursor.getColumnCount(); i++) {
+                       logMessage.append(cursor.getColumnName(i)).append("=").append(cursor.getString(i)).append(", ");
+                   }
+                   Log.d("DBHelper", logMessage.toString());
+                   //cursor.close();
+               } else {
+                   Log.w("DBHelper", "Could not retrieve inserted transaction details.");
+               }
+           }
+
+           return result;
+
+       } catch (Exception e) {
+           Log.e("DBHelper", "Exception inserting transaction: " + e.getMessage());
+           e.printStackTrace();
+           return -1; // Return -1 to indicate failure
+       }
+   }
 
 
-    // Function to get transaction data
-// Function to get transaction data
-    public List<TransactionModel> getTransactions(int userId) {
+    public List<TransactionModel> getTransactions() {
         List<TransactionModel> transactionsList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = null;
         Cursor cursor = null;
 
         try {
-            // Query to retrieve transaction data including related tables for category, user, and payment mode
-            String selectQuery = "SELECT " +
-                    "t." + COLUMN_TRANSACTION_ID + ", " +
-                    "t." + COLUMN_TRANSACTION_AMOUNT + ", " +
-                    "t." + COLUMN_TRANSACTION_DATE + ", " +
-                    "t." + COLUMN_TRANSACTION_TYPE + ", " +
-                    "c." + COLUMN_CATEGORY_NAME + " AS categoryName " +
-                    "FROM " + TABLE_TRANSACTIONS + " t " +
-                    "INNER JOIN " + TABLE_CATEGORIES + " c ON t." + COLUMN_TRANSACTION_CATEGORY_ID + " = c." + COLUMN_CATEGORY_ID + " " +
-                    "WHERE t." + COLUMN_TRANSACTION_USER_ID + " = ?";
+            Log.d("DBHelper_Debug", "getTransactions: Starting transaction retrieval.");
 
-            // Execute the query
-            cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
+            db = this.getReadableDatabase();
+            Log.d("DBHelper_Debug", "getTransactions: Database opened successfully.");
 
-            // Get the column indexes to avoid calling getColumnIndexOrThrow repeatedly
-            int transactionIdIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_ID);
-            int transactionAmountIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
-            int transactionDateIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
-            int transactionTypeIdx = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_TYPE);
-            int categoryNameIdx = cursor.getColumnIndexOrThrow("categoryName");
 
-            // Iterate through the cursor and build the list
-            if (cursor.moveToFirst()) {
-                do {
-                    TransactionModel transaction = new TransactionModel();
+            String selectQuery = " SELECT " +  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE + ","+COLUMN_TRANSACTION_AMOUNT+ ","+COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS;
+            Log.d("DBHelper_Debug", "getTransactions: Executing query: " + selectQuery);
 
-                    // Set values to TransactionModel
-                    transaction.setTransactionId(cursor.getInt(transactionIdIdx));
-                    transaction.setTransactionAmount(cursor.getDouble(transactionAmountIdx));
-                    transaction.setTransactionDate(cursor.getString(transactionDateIdx));
-                    transaction.setTransactionType(cursor.getString(transactionTypeIdx));
-                    transaction.setCategoryName(cursor.getString(categoryNameIdx));
+            cursor = db.rawQuery(selectQuery, null);
 
-                    // Add to list
-                    transactionsList.add(transaction);
-                } while (cursor.moveToNext());
+            if (cursor != null) {
+                Log.d("DBHelper_Debug", "getTransactions: Cursor is not null.");
+                    int abc = cursor.getCount();
+                Log.d("DBHelper_Debug","Cursor Count:" + cursor.getCount());
+
+                if (cursor.moveToFirst()) {
+                    Log.d("DBHelper_Debug", "getTransactions: Cursor moved to first row.");
+
+                    do {
+                        TransactionModel transaction = new TransactionModel();
+
+                        //int transactionIdIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_ID);
+                        int transactionAmountIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
+                        int transactionDateIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
+                        int categoryNameIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_CATEGORY_ID);
+                        int transactionTypeIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_TYPE);
+                        //int paymentModeNameIndex = cursor.getColumnIndexOrThrow("paymentModeName");
+
+                        //transaction.setTransactionId(cursor.getInt(transactionIdIndex));
+                        transaction.setTransactionAmount(cursor.getDouble(transactionAmountIndex));
+                        transaction.setTransactionDate(cursor.getString(transactionDateIndex));
+                        transaction.setCategoryName(cursor.getString(categoryNameIndex));
+                        transaction.setTransactionType(cursor.getString(transactionTypeIndex));
+                        //transaction.setPaymentModeName(cursor.getString(paymentModeNameIndex));
+
+                        Log.d("DBHelper_Debug", "getTransactions: Fetched transaction: " + transaction.toString());
+
+                        transactionsList.add(transaction);
+                    } while (cursor.moveToNext());
+
+                    Log.d("DBHelper_Debug", "getTransactions: All transactions fetched. Total: " + transactionsList.size());
+                } else {
+                    Log.d("DBHelper_Debug", "getTransactions: Cursor is empty (no rows).");
+                }
+            } else {
+                Log.e("DBHelper_Debug", "getTransactions: Cursor is null after query.");
             }
+
         } catch (Exception e) {
-            e.printStackTrace();  // Handle or log exception
+            Log.e("DBHelper_Debug", "getTransactions: Error fetching transactions: " + e.getMessage());
+            e.printStackTrace();
         } finally {
-            // Ensure cursor is closed
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
+            if (cursor != null) {
+                //cursor.close();
+                Log.d("DBHelper_Debug", "getTransactions: Cursor closed.");
             }
-            db.close();  // Close the database
-        }
 
+
+        }
+        Log.d("DBHelper_Debug", "getTransactions: Returning transaction list. Size: " + transactionsList.size());
         return transactionsList;
     }
-
-
 }

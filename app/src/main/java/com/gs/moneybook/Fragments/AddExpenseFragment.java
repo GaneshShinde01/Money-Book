@@ -2,6 +2,7 @@ package com.gs.moneybook.Fragments;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,6 +125,7 @@ public class AddExpenseFragment extends Fragment {
         );
         binding.autoCompleteEditTextExpensePaymentMode.setAdapter(adapter);
     }
+/*
 
     // Method to add an expense
     private void addExpense() {
@@ -154,24 +156,67 @@ public class AddExpenseFragment extends Fragment {
                             Toast.makeText(requireContext(), "Expense added successfully!", Toast.LENGTH_SHORT).show();
                             clearInputFields();
                         } else {
+                            Log.e("AddExpenseFragment", "Error adding expense.");
+
                             Toast.makeText(requireContext(), "Error adding expense.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
+
                     Toast.makeText(requireContext(), "Amount must be greater than zero.", Toast.LENGTH_SHORT).show();
                 }
             } catch (NumberFormatException e) {
+                Log.e("AddExpenseFragment", "Invalid amount entered: " + e.getMessage());
+
                 Toast.makeText(requireContext(), "Invalid amount entered.", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
         }
     }
+*/
+
+    private void addExpense() {
+        categoryName = binding.autoCompleteEditTextForExpenseCategory.getText().toString();
+        String amountString = binding.expenseAmountEditText.getText().toString();
+        String paymentMode = binding.autoCompleteEditTextExpensePaymentMode.getText().toString();
+
+        if (TextUtils.isEmpty(amountString)) {
+            Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double amount = Double.parseDouble(amountString);
+            if (amount <= 0) {
+                Toast.makeText(requireContext(), "Amount must be greater than zero.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!ensureCategoryExists(categoryName)) return;
+            if (!ensurePaymentModeExists(paymentMode)) return;
+
+            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Expense", paymentMode);
+            if (result != -1) {
+                Toast.makeText(requireContext(), "Expense added successfully!", Toast.LENGTH_SHORT).show();
+                clearInputFields();
+            } else {
+                Log.e("AddExpenseFragment", "Error adding expense.");
+                Toast.makeText(requireContext(), "Error adding expense.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("AddExpenseFragment", "Invalid amount entered: " + e.getMessage());
+            Toast.makeText(requireContext(), "Invalid amount entered.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     // Method to ensure the category exists in the database
     private boolean ensureCategoryExists(String categoryName) {
         if (!dbHelper.checkCategoryExists(categoryName, "Expense", loggedInUserId)) {
             // Insert the new category for the user
+            Log.e("AddExpenseFragment", "Failed to insert category: " + categoryName);
+
             return dbHelper.insertCategory(dbHelper.getWritableDatabase(), categoryName, "Expense", loggedInUserId);
         }
         return true;
@@ -181,6 +226,8 @@ public class AddExpenseFragment extends Fragment {
     private boolean ensurePaymentModeExists(String paymentMode) {
         if (!dbHelper.checkPaymentModeExists(paymentMode, loggedInUserId)) {
             // Insert the new payment mode
+            Log.e("AddExpenseFragment", "Failed to insert payment mode: " + paymentMode);
+
             return dbHelper.insertPaymentMode(paymentMode, loggedInUserId);
         }
         return true;

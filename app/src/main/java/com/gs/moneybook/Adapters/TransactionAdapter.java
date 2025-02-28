@@ -2,6 +2,7 @@ package com.gs.moneybook.Adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,31 +42,25 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
 
         TransactionModel transactionModel = transactionModelList.get(position);
+        Log.d("TransactionAdapter", "Binding transaction at position: " + position + ", Transaction: " + transactionModel.toString());
+
 
         // Safely parse and format the date using DateUtils
         String date = transactionModel.getTransactionDate();
         if (date != null && !date.isEmpty()) {
             String[] dateTimeParts = date.split(" ");
             if (dateTimeParts.length >= 2) {
-                // Format date as "dd/MM/yyyy" using DateUtils
-                String[] dateParts = dateTimeParts[0].split("-");
-                if (dateParts.length == 3) {
-                    int year = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]) - 1;  // Month is 0-based in Calendar
-                    int day = Integer.parseInt(dateParts[2]);
-                    holder.transactionDate.setText(DateUtils.formatDate(day, month, year));  // Format the date
-                } else {
-                    holder.transactionDate.setText(date);  // Fallback to raw date if format is wrong
-                }
-                holder.transactionTime.setText(dateTimeParts[1]);  // Set time part
+                holder.transactionDate.setText(dateTimeParts[0]); // Directly set the date part
+                holder.transactionTime.setText(dateTimeParts[1]); // Directly set the time part
             } else {
-                holder.transactionDate.setText(date);  // Fallback to entire date if format is wrong
-                holder.transactionTime.setText("");   // Clear time in case of incorrect format
+                holder.transactionDate.setText(date); // If no space, set the whole string as date
+                holder.transactionTime.setText(""); // Time is empty
             }
         } else {
             holder.transactionDate.setText("N/A");
             holder.transactionTime.setText("");
         }
+
 
         // Set the category name
         holder.categoryName.setText(transactionModel.getCategoryName() != null ? transactionModel.getCategoryName() : "Unknown");
@@ -73,15 +68,13 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         // Set transaction amount and color based on type
         double amount = transactionModel.getTransactionAmount();
         if ("Expense".equals(transactionModel.getTransactionType())) {
-            holder.transactionAmount.setText("-₹" + amount);
-            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.expense_red));  // Use resources for colors
+            holder.transactionAmount.setText("-₹" + String.format("%.2f", amount)); // **Highlighted: Formatted the amount to 2 decimal places**
+            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.expense_red));
         } else {
-            holder.transactionAmount.setText("+₹" + amount);
-            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.income_green));  // Use resources for colors
+            holder.transactionAmount.setText("+₹" + String.format("%.2f", amount)); // **Highlighted: Formatted the amount to 2 decimal places**
+            holder.transactionAmount.setTextColor(context.getResources().getColor(R.color.income_green));
         }
 
-        // Comment out the category icon for now
-        // holder.categoryIcon.setImageResource(R.drawable.check);
     }
 
     @Override
@@ -90,7 +83,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
     public static class TransactionViewHolder extends RecyclerView.ViewHolder{
-        ImageView categoryIcon;
+
         TextView transactionDate, transactionTime, categoryName, transactionAmount;
 
         public TransactionViewHolder(@NonNull View itemView) {
@@ -106,10 +99,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         }
     }
 
-    // Helper method to extract time from the date string (assuming date is in "YYYY-MM-DD HH:MM:SS" format)
-    private String getTimeFromDate(String date) {
-        // Parse and return the time part
-        return date.split(" ")[1];  // Assuming date is "YYYY-MM-DD HH:MM:SS", return the time part
+
+    public void updateData(List<TransactionModel> newTransactions) {
+        this.transactionModelList.clear();
+        this.transactionModelList.addAll(newTransactions);
+        notifyDataSetChanged();
     }
 
 }
