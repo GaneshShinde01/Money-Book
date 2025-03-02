@@ -61,6 +61,19 @@
         android:dropDownHeight="wrap_content"
         android:dropDownVerticalOffset="12dp" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ettransDecriptionExp"
+        android:inputType="textMultiLine"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/black"
+        android:background="@drawable/et_bg"
+        android:hint="Enter Description"
+        android:textColorHint="@color/black"
+        />
+
     <!-- Add Expense Button -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addExpenseButton"

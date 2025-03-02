@@ -46,7 +46,7 @@ public class AllTransactionsFragment extends Fragment {
 
 
         executorService.execute(() -> {
-            List<TransactionModel> transactions = dbHelper.getTransactions();
+            List<TransactionModel> transactions = dbHelper.getTransactions(loggedInUserId);
             Log.d("AllTransationFragment", "Transaction list size: " + transactions.size());
 
             for(TransactionModel transactionModel : transactions){

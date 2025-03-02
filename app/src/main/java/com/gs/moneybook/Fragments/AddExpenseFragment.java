@@ -125,61 +125,13 @@ public class AddExpenseFragment extends Fragment {
         );
         binding.autoCompleteEditTextExpensePaymentMode.setAdapter(adapter);
     }
-/*
 
-    // Method to add an expense
-    private void addExpense() {
-        // Get user inputs
-        categoryName = binding.autoCompleteEditTextForExpenseCategory.getText().toString();
-        String amountString = binding.expenseAmountEditText.getText().toString();
-        String paymentMode = binding.autoCompleteEditTextExpensePaymentMode.getText().toString();
-
-        if (!TextUtils.isEmpty(amountString)) {
-            try {
-                double amount = Double.parseDouble(amountString);
-
-                if (amount > 0) {
-                    // Get the current date using DateUtils
-                    String currentDate = DateUtils.getCurrentDate();
-
-                    // Ensure the category exists or add it if necessary
-                    boolean categoryExists = ensureCategoryExists(categoryName);
-
-                    // Ensure payment mode exists or add it if necessary
-                    boolean paymentModeExists = ensurePaymentModeExists(paymentMode);
-
-                    if (categoryExists && paymentModeExists) {
-                        // Use categoryName and paymentMode in the createTransaction method
-                        long result = dbHelper.createTransaction(amount, currentDate, categoryName, loggedInUserId, "Expense", paymentMode);
-
-                        if (result != -1) {
-                            Toast.makeText(requireContext(), "Expense added successfully!", Toast.LENGTH_SHORT).show();
-                            clearInputFields();
-                        } else {
-                            Log.e("AddExpenseFragment", "Error adding expense.");
-
-                            Toast.makeText(requireContext(), "Error adding expense.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                } else {
-
-                    Toast.makeText(requireContext(), "Amount must be greater than zero.", Toast.LENGTH_SHORT).show();
-                }
-            } catch (NumberFormatException e) {
-                Log.e("AddExpenseFragment", "Invalid amount entered: " + e.getMessage());
-
-                Toast.makeText(requireContext(), "Invalid amount entered.", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
-        }
-    }
-*/
 
     private void addExpense() {
         categoryName = binding.autoCompleteEditTextForExpenseCategory.getText().toString();
         String amountString = binding.expenseAmountEditText.getText().toString();
         String paymentMode = binding.autoCompleteEditTextExpensePaymentMode.getText().toString();
+        String transDesc = binding.ettransDecriptionExp.getText().toString();
 
         if (TextUtils.isEmpty(amountString)) {
             Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
@@ -196,7 +148,7 @@ public class AddExpenseFragment extends Fragment {
             if (!ensureCategoryExists(categoryName)) return;
             if (!ensurePaymentModeExists(paymentMode)) return;
 
-            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Expense", paymentMode);
+            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Expense", paymentMode,transDesc);
             if (result != -1) {
                 Toast.makeText(requireContext(), "Expense added successfully!", Toast.LENGTH_SHORT).show();
                 clearInputFields();
@@ -258,6 +210,7 @@ public class AddExpenseFragment extends Fragment {
         binding.autoCompleteEditTextForExpenseCategory.setText("");
         binding.expenseAmountEditText.setText("");
         binding.autoCompleteEditTextExpensePaymentMode.setText("");
+        binding.ettransDecriptionExp.setText("");
     }
 
     // Navigate to AddCategoryFragment to allow the user to add a new category

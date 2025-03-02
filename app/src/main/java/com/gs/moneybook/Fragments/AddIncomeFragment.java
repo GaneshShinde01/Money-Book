@@ -73,6 +73,7 @@ public class AddIncomeFragment extends Fragment {
     private void addIncome() {
         String categoryName = binding.autoCompleteEditText.getText().toString();
         String amountString = binding.incomeAmountEditText.getText().toString();
+        String transDesc = binding.ettransDecriptionInc.getText().toString();
 
         if (TextUtils.isEmpty(amountString)) {
             Toast.makeText(requireContext(), "Please enter the amount.", Toast.LENGTH_SHORT).show();
@@ -88,7 +89,7 @@ public class AddIncomeFragment extends Fragment {
 
             if (!ensureCategoryExists(categoryName)) return;
 
-            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Income", "Cash"); // Payment mode is now "Cash"
+            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Income", "Cash",transDesc); // Payment mode is now "Cash"
             if (result != -1) {
                 Toast.makeText(requireContext(), "Income added successfully!", Toast.LENGTH_SHORT).show();
                 clearInputFields();

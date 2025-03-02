@@ -104,6 +104,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_TRANSACTION_USER_ID = "userId";
     private static final String COLUMN_TRANSACTION_TYPE = "type"; // "Income" or "Expense"
     private static final String COLUMN_TRANSACTION_PAYMENT_MODE_ID = "paymentModeId"; // Foreign key to payment_modes table
+    private static final String COLUMN_TRANSACTION_DESCRIPTION = "transDescription";
 
     private static final String CREATE_TABLE_TRANSACTIONS = "CREATE TABLE " + TABLE_TRANSACTIONS + "("
             + COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -112,6 +113,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_TRANSACTION_CATEGORY_ID + " INTEGER NOT NULL,"
             + COLUMN_TRANSACTION_USER_ID + " INTEGER NOT NULL,"
             + COLUMN_TRANSACTION_TYPE + " TEXT NOT NULL,"
+            + COLUMN_TRANSACTION_DESCRIPTION + " TEXT DEFAULT 'N/A',"
             + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " INTEGER,"
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "),"
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "),"
@@ -575,7 +577,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_TRANSACTIONS, null, values);
     }
 */
-   public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, String paymentModeName) {
+   public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, String paymentModeName, String transDescription) {
        SQLiteDatabase db = this.getWritableDatabase();
        ContentValues values = new ContentValues();
 
@@ -585,6 +587,7 @@ public class DBHelper extends SQLiteOpenHelper {
            values.put(COLUMN_TRANSACTION_CATEGORY_ID, categoryId);
            values.put(COLUMN_TRANSACTION_USER_ID, userId);
            values.put(COLUMN_TRANSACTION_TYPE, transactionType);
+           values.put(COLUMN_TRANSACTION_DESCRIPTION,transDescription);
 
            Integer paymentModeId = getPaymentModeIdByName(paymentModeName); // Get payment mode ID
 
@@ -627,7 +630,7 @@ public class DBHelper extends SQLiteOpenHelper {
    }
 
 
-    public List<TransactionModel> getTransactions() {
+    public List<TransactionModel> getTransactions(int userId) {
         List<TransactionModel> transactionsList = new ArrayList<>();
         SQLiteDatabase db = null;
         Cursor cursor = null;
@@ -639,7 +642,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Log.d("DBHelper_Debug", "getTransactions: Database opened successfully.");
 
 
-            String selectQuery = " SELECT " +  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE + ","+COLUMN_TRANSACTION_AMOUNT+ ","+COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS;
+            String selectQuery = " SELECT " +  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE + ","+COLUMN_TRANSACTION_AMOUNT+ ","+COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS +" where "+ COLUMN_TRANSACTION_USER_ID+" ="+  userId;
             Log.d("DBHelper_Debug", "getTransactions: Executing query: " + selectQuery);
 
             cursor = db.rawQuery(selectQuery, null);
