@@ -30,6 +30,13 @@ public class ProfileFragment extends Fragment {
         //return inflater.inflate(R.layout.fragment_profile, container, false);
         binding = FragmentProfileBinding.inflate(inflater,container,false);
 
+        binding.viewUserProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadFragment(new ViewProfileFragment());
+            }
+        });
+
         binding.addCategoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

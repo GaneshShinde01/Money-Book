@@ -288,6 +288,36 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+
+    public Cursor getUserById(long userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(
+                TABLE_USERS,
+                null,
+                COLUMN_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)},
+                null,
+                null,
+                null
+        );
+    }
+
+    // Helper method to update a user
+    public boolean updateUser(ContentValues values, long userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.update(TABLE_USERS, values, "id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+
+        if (result == 0) {
+            Log.e("DBHelper", "Error updating user");
+            return false;
+        } else {
+            Log.d("DBHelper", "User updated");
+            return true;
+        }
+    }
+
+
     // Helper method to insert a category
     public boolean insertCategory(SQLiteDatabase db, String categoryName, String categoryType, int userId) {
         ContentValues values = new ContentValues();

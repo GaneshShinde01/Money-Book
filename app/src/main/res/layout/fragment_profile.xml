@@ -58,6 +58,18 @@
             android:gravity="center_horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/viewUserProfileButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="View Profile"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="15dp"
+                android:paddingEnd="25dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/addCategoryButton"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
