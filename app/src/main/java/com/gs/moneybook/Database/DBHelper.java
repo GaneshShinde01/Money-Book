@@ -552,31 +552,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Transactions Table - CRUD Operations
 
-   /* // Create a new transaction
-    public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, @Nullable String paymentModeName) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TRANSACTION_AMOUNT, amount);
-        values.put(COLUMN_TRANSACTION_DATE, date);
-        values.put(COLUMN_TRANSACTION_CATEGORY_ID, categoryId);
-        values.put(COLUMN_TRANSACTION_USER_ID, userId); // Associate with logged-in user
-        values.put(COLUMN_TRANSACTION_TYPE, transactionType); // Income or Expense
 
-        // If the transaction is an expense and a payment mode is provided
-        if (transactionType.equalsIgnoreCase("Expense") && paymentModeName != null) {
-            // Fetch paymentModeId from the payment_modes table
-            Integer paymentModeId = getPaymentModeIdByName(paymentModeName);
-            if (paymentModeId != null) {
-                values.put(COLUMN_TRANSACTION_PAYMENT_MODE_ID, paymentModeId); // Insert the paymentModeId
-            } else {
-                // Handle case where payment mode is not found
-                throw new IllegalArgumentException("Invalid payment mode: " + paymentModeName);
-            }
-        }
-
-        return db.insert(TABLE_TRANSACTIONS, null, values);
-    }
-*/
    public long createTransaction(double amount, String date, String categoryId, int userId, String transactionType, String paymentModeName, String transDescription) {
        SQLiteDatabase db = this.getWritableDatabase();
        ContentValues values = new ContentValues();
