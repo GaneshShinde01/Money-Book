@@ -66,6 +66,7 @@
                 android:textColor="@color/black"
                 android:paddingStart="15dp"
                 android:paddingEnd="25dp"
+                android:drawableStart="@drawable/ic_profile"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_bg" />
 
@@ -92,6 +93,18 @@
                 android:paddingStart="15dp"
                 android:paddingEnd="20dp"
                 android:drawableStart="@drawable/ic_payment_modes"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/transactionAnalyticsButton"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Transaction Analytics"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:paddingStart="12dp"
+                android:drawableStart="@drawable/ic_transaction_analytics"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_bg" />
 
