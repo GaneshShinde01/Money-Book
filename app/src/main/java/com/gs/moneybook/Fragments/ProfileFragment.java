@@ -51,6 +51,14 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        binding.transactionAnalyticsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment());
+
+            }
+        });
+
         binding.allTransactionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

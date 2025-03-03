@@ -9,4 +9,9 @@
     <color name="expense_red">#FF1100</color>
     <color name="income_green">#04FF0F</color>
 
+    <color name="barColor1">#82B1FF</color>
+    <color name="barColor2">#80CBC4</color>
+    <color name="barColor3">#FFAB91</color>
+    <color name="barColor4">#F48FB1</color>
+
 </resources>
