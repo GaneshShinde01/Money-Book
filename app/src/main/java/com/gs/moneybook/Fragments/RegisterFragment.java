@@ -216,7 +216,7 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         // Format the date and set it in the EditText
-                        String formattedDate = DateUtils.formatDate(selectedDay, selectedMonth, selectedYear);
+                        String formattedDate = DateUtils.formatDateForDatabase(selectedDay, selectedMonth, selectedYear);
                         binding.etDOB.setText(formattedDate);
                     }
                 },

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
+    android:orientation="vertical"
     android:background="@color/bgAppColor">
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip"
+        android:id="@+id/skipToDashboard"
+        android:textColor="@color/black"
+        android:layout_gravity="end"
+        android:background="@drawable/btn_bg"
+
+        />
 
 
     <LinearLayout
@@ -87,4 +98,4 @@
             android:textSize="14sp"
             android:layout_gravity="center"/>
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

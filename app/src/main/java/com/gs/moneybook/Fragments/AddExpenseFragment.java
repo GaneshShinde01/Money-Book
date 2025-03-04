@@ -148,7 +148,7 @@ public class AddExpenseFragment extends Fragment {
             if (!ensureCategoryExists(categoryName)) return;
             if (!ensurePaymentModeExists(paymentMode)) return;
 
-            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Expense", paymentMode,transDesc);
+            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTimeForDatabase(), categoryName, loggedInUserId, "Expense", paymentMode,transDesc);
             if (result != -1) {
                 Toast.makeText(requireContext(), "Expense added successfully!", Toast.LENGTH_SHORT).show();
                 clearInputFields();

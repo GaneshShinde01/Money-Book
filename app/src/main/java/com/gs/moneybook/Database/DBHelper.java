@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -704,5 +705,72 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         Log.d("DBHelper_Debug", "getTransactions: Returning transaction list. Size: " + transactionsList.size());
         return transactionsList;
+    }
+
+    public double getTotalIncome(String startDate, String endDate) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double totalIncome = 0.0;
+        Cursor cursor = null;
+
+        try {
+            // Forming the query with single quotes around the dates
+            String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
+                    "FROM " + TABLE_TRANSACTIONS + " " +
+                    "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Income' AND " +
+                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+            Log.d("SQL_QUERY", query + " [" + startDate + ", " + endDate + "]"); // Log the query
+
+            // Execute the query
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                totalIncome = cursor.getDouble(0);  // Get the SUM result
+                Log.d("TOTAL_INCOME", "Total income: " + totalIncome); // Log the result
+            }
+
+        } catch (Exception e) {
+            Log.e("GET_TOTAL_INCOME", "Error: " + e.getMessage()); // Log any errors
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Always close the cursor
+            }
+           // db.close(); // Always close the database
+        }
+
+        return totalIncome;
+    }
+
+
+    public double getTotalExpense(String startDate, String endDate) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double totalExpense = 0.0;
+
+        try {
+            // Assuming startDate and endDate are in the format "YYYY-MM-DD"
+            String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
+                    "FROM " + TABLE_TRANSACTIONS + " " +
+                    "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Expense' AND " +
+                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+
+            //Cursor cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            Cursor cursor = db.rawQuery(query,null);
+
+
+            if (cursor.moveToFirst()) {
+                totalExpense = cursor.getDouble(0);
+            }
+
+            cursor.close();
+        } catch (Exception e) {
+            // Handle exceptions (e.g., log the error)
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        return totalExpense;
     }
 }

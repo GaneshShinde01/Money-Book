@@ -89,7 +89,7 @@ public class AddIncomeFragment extends Fragment {
 
             if (!ensureCategoryExists(categoryName)) return;
 
-            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTime(), categoryName, loggedInUserId, "Income", "Cash",transDesc); // Payment mode is now "Cash"
+            long result = dbHelper.createTransaction(amount, DateUtils.getCurrentDateTimeForDatabase(), categoryName, loggedInUserId, "Income", "Cash",transDesc); // Payment mode is now "Cash"
             if (result != -1) {
                 Toast.makeText(requireContext(), "Income added successfully!", Toast.LENGTH_SHORT).show();
                 clearInputFields();
@@ -129,6 +129,7 @@ public class AddIncomeFragment extends Fragment {
     private void clearInputFields() {
         binding.autoCompleteEditText.setText("");
         binding.incomeAmountEditText.setText("");
+        binding.ettransDecriptionInc.setText("");
     }
 
     private void navigateToAddCategoryFragment() {
