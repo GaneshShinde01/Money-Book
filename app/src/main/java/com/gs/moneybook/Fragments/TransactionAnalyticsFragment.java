@@ -1,5 +1,6 @@
 package com.gs.moneybook.Fragments;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -11,13 +12,20 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.gs.moneybook.Database.DBHelper;
+import com.gs.moneybook.Utilities.DateUtils;
 import com.gs.moneybook.databinding.FragmentTransactionAnalyticsBinding;
+
+import java.util.Calendar;
 
 public class TransactionAnalyticsFragment extends Fragment {
     private FragmentTransactionAnalyticsBinding binding;
     private DBHelper dbHelper;
     private double income = 0.0;
     private double expense = 0.0;
+
+    private String startDate = "";
+    private String endDate = "";
+    private Calendar startCalendar;  // New Calendar object to track start date
 
     public TransactionAnalyticsFragment() {
         // Required empty public constructor
@@ -31,28 +39,91 @@ public class TransactionAnalyticsFragment extends Fragment {
         View view = binding.getRoot();
         dbHelper = DBHelper.getInstance(getContext());
 
-        String startDate = "2025-03-04";
-        String endDate = "2025-03-04";
-
-         income = dbHelper.getTotalIncome(startDate, endDate);
-         expense = dbHelper.getTotalExpense(startDate, endDate);
-
-
-        Toast.makeText(getContext(), "income="+income, Toast.LENGTH_SHORT).show();
-
-         binding.tvIncomeTransactionAnalytics.setText(income+"");
-         binding.tvOutcomeTransactionAnalytics.setText(expense+"");
+        //setting default dates for today
+        startDate = DateUtils.getCurrentDateForDatabase();
+        endDate = DateUtils.getCurrentDateForDatabase();
+        calculateAndDisplayAnalytics();
 
 
-        loadBarGraph();
+        // Initialize the startCalendar as a new Calendar instance
+        startCalendar = Calendar.getInstance();
+
+        // Handle Start Date Selection
+        binding.tvStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(true);
+            }
+        });
+
+        // Handle End Date Selection and automatically calculate income/expense
+        binding.tvEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(false);
+            }
+        });
+
         return view;
     }
 
-    private void loadBarGraph() {
-        // Example values for income and expense
-//        int income = 500000;  // Example value for income
-//        int expense = 300000;  // Example value for expense
+    // Method to show the DatePickerDialog
+    private void showDatePickerDialog(final boolean isStartDate) {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> {
+            // Format selected date
+            String selectedDate = DateUtils.formatDateForDatabase(dayOfMonth, month1, year1);
+
+            // Store the selected date in the appropriate variable
+            if (isStartDate) {
+                startDate = selectedDate;
+                startCalendar.set(year1, month1, dayOfMonth);  // Store the selected start date in calendar
+                binding.tvStartDate.setText("Start Date: " + startDate);
+            } else {
+                endDate = selectedDate;
+                binding.tvEndDate.setText("End Date: " + endDate);
+                // After end date is selected, automatically calculate income/expense and load the graph
+                calculateAndDisplayAnalytics();
+            }
+        }, year, month, day);
+
+        // Set constraints for start and end dates
+        if (isStartDate) {
+            // If it's the start date, no constraint is needed, so we reset the min/max date
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());  // Allow selecting dates up to today
+        } else {
+            // If it's the end date, set the minimum selectable date to the day after the start date
+            if (startCalendar != null) {
+                datePickerDialog.getDatePicker().setMinDate(startCalendar.getTimeInMillis());  // Set min date for end date
+            }
+        }
+
+        datePickerDialog.show();
+    }
+
+    // Method to calculate and display income/expense and update the bar graph
+    private void calculateAndDisplayAnalytics() {
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            // Calculate income and expense between selected dates
+            income = dbHelper.getTotalIncome(startDate, endDate);
+            expense = dbHelper.getTotalExpense(startDate, endDate);
+
+            // Update the text views
+            binding.tvIncomeTransactionAnalytics.setText(String.format("%.2f", income));
+            binding.tvOutcomeTransactionAnalytics.setText(String.format("%.2f", expense));
+
+            // Load the bar graph with the new values
+            loadBarGraph();
+        } else {
+            Toast.makeText(requireContext(), "Please select both start and end dates!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadBarGraph() {
         // Maximum value between income and expense
         int maxValue = (int) Math.max(income, expense);
 

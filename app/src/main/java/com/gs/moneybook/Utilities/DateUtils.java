@@ -1,5 +1,6 @@
 package com.gs.moneybook.Utilities;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,5 +37,16 @@ public class DateUtils {
     public static String getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         return sdf.format(new Date());
+    }
+
+    // Method to parse date from a string in "yyyy-MM-dd" format
+    public static Date parseDateFromDatabase(String dateString) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            return sdf.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;  // Handle the error and return null if parsing fails
+        }
     }
 }

@@ -29,6 +29,36 @@
                 android:layout_marginEnd="16dp"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Start Date"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <TextView
+                android:id="@+id/tvEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select End Date"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:background="?android:attr/selectableItemBackground" />
+
+
+        </LinearLayout>
+
+
         <!-- Income and Outcome Section -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -228,7 +258,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Time Range Buttons -->
+       <!--  Time Range Buttons
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -268,6 +298,6 @@
                 android:textColor="@color/black"
                 android:text="YEARLY" />
         </LinearLayout>
-
+-->
     </LinearLayout>
 </ScrollView>
