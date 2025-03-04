@@ -10,6 +10,7 @@ public class TransactionModel {
     private String transactionType;
     private String categoryName;
     private String paymentModeName; // Added payment mode name
+    private String transactionDescription;
 
 
     public TransactionModel(int transactionId, double transactionAmount, String transactionDate, String transactionType, String categoryName) {
@@ -70,6 +71,14 @@ public class TransactionModel {
 
     public void setPaymentModeName(String paymentModeName) {
         this.paymentModeName = paymentModeName;
+    }
+
+    public String getTransactionDescription() {
+        return transactionDescription;
+    }
+
+    public void setTransactionDescription(String transactionDescription) {
+        this.transactionDescription = transactionDescription;
     }
 }
 

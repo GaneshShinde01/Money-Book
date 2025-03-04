@@ -1,13 +1,15 @@
 package com.gs.moneybook.Fragments;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,77 +17,65 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.gs.moneybook.Database.DBHelper;
+import com.gs.moneybook.Model.TransactionModel;
+import com.gs.moneybook.R;
 import com.gs.moneybook.Utilities.DateUtils;
 import com.gs.moneybook.databinding.FragmentTransactionAnalyticsBinding;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
+import java.util.List;
 
 public class TransactionAnalyticsFragment extends Fragment {
     private FragmentTransactionAnalyticsBinding binding;
     private DBHelper dbHelper;
     private double income = 0.0;
     private double expense = 0.0;
+    private int loggedInUserId = 1;
 
     private String startDate = "";
     private String endDate = "";
-    private Calendar startCalendar;  // New Calendar object to track start date
+    private Calendar startCalendar;
 
-    private static final int CREATE_FILE_REQUEST_CODE = 1;
-
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    downloadTransactionReport();
+                } else {
+                    Toast.makeText(getContext(), "Storage permission denied. Cannot save PDF.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     public TransactionAnalyticsFragment() {
-        // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment using ViewBinding
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTransactionAnalyticsBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         dbHelper = DBHelper.getInstance(getContext());
 
-        //setting default dates for today
         startDate = DateUtils.getCurrentDateForDatabase();
         endDate = DateUtils.getCurrentDateForDatabase();
         calculateAndDisplayAnalytics();
 
-        binding.btnDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadTransactionReport();
-            }
-        });
+        binding.btnDownload.setOnClickListener(v -> checkStoragePermissionAndDownload());
 
-
-        // Initialize the startCalendar as a new Calendar instance
         startCalendar = Calendar.getInstance();
 
-        // Handle Start Date Selection
-        binding.tvStartDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(true);
-            }
-        });
-
-        // Handle End Date Selection and automatically calculate income/expense
-        binding.tvEndDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(false);
-            }
-        });
+        binding.tvStartDate.setOnClickListener(v -> showDatePickerDialog(true));
+        binding.tvEndDate.setOnClickListener(v -> showDatePickerDialog(false));
 
         return view;
     }
 
-    // Method to show the DatePickerDialog
     private void showDatePickerDialog(final boolean isStartDate) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -93,48 +83,38 @@ public class TransactionAnalyticsFragment extends Fragment {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> {
-            // Format selected date
             String selectedDate = DateUtils.formatDateForDatabase(dayOfMonth, month1, year1);
 
-            // Store the selected date in the appropriate variable
             if (isStartDate) {
                 startDate = selectedDate;
-                startCalendar.set(year1, month1, dayOfMonth);  // Store the selected start date in calendar
+                startCalendar.set(year1, month1, dayOfMonth);
                 binding.tvStartDate.setText("Start Date: " + startDate);
             } else {
                 endDate = selectedDate;
                 binding.tvEndDate.setText("End Date: " + endDate);
-                // After end date is selected, automatically calculate income/expense and load the graph
                 calculateAndDisplayAnalytics();
             }
         }, year, month, day);
 
-        // Set constraints for start and end dates
         if (isStartDate) {
-            // If it's the start date, no constraint is needed, so we reset the min/max date
-            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());  // Allow selecting dates up to today
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
         } else {
-            // If it's the end date, set the minimum selectable date to the day after the start date
             if (startCalendar != null) {
-                datePickerDialog.getDatePicker().setMinDate(startCalendar.getTimeInMillis());  // Set min date for end date
+                datePickerDialog.getDatePicker().setMinDate(startCalendar.getTimeInMillis());
             }
         }
 
         datePickerDialog.show();
     }
 
-    // Method to calculate and display income/expense and update the bar graph
     private void calculateAndDisplayAnalytics() {
         if (!startDate.isEmpty() && !endDate.isEmpty()) {
-            // Calculate income and expense between selected dates
-            income = dbHelper.getTotalIncome(startDate, endDate);
-            expense = dbHelper.getTotalExpense(startDate, endDate);
+            income = dbHelper.getTotalIncome(loggedInUserId,startDate, endDate);
+            expense = dbHelper.getTotalExpense(loggedInUserId,startDate, endDate);
 
-            // Update the text views
             binding.tvIncomeTransactionAnalytics.setText(String.format("%.2f", income));
             binding.tvOutcomeTransactionAnalytics.setText(String.format("%.2f", expense));
 
-            // Load the bar graph with the new values
             loadBarGraph();
         } else {
             Toast.makeText(requireContext(), "Please select both start and end dates!", Toast.LENGTH_SHORT).show();
@@ -142,129 +122,205 @@ public class TransactionAnalyticsFragment extends Fragment {
     }
 
     private void loadBarGraph() {
-        // Maximum value between income and expense
         int maxValue = (int) Math.max(income, expense);
-
-        // If the maxValue is 0 (to avoid division by zero)
         if (maxValue == 0) {
-            maxValue = 1;  // Set to 1 to avoid division by zero
+            maxValue = 1;
         }
 
-        // Desired height of the bar container in dp (300dp in this example)
-        int barContainerHeight = 300;  // in dp
-
-        // Scale factor (how much 1 unit of value equals in terms of dp)
+        int barContainerHeight = 300;
         float scaleFactor = (float) maxValue / barContainerHeight;
 
-        // Calculate the scaled height for income and expense
         int scaledIncomeHeight = (int) (income / scaleFactor);
         int scaledExpenseHeight = (int) (expense / scaleFactor);
 
-        // Convert dp to pixels (since the height property uses pixels)
         int incomeHeightInPixels = dpToPx(scaledIncomeHeight);
         int expenseHeightInPixels = dpToPx(scaledExpenseHeight);
 
-        // Set the height for the income bar dynamically using ViewBinding
         LinearLayout.LayoutParams incomeParams = (LinearLayout.LayoutParams) binding.barIncome.getLayoutParams();
-        incomeParams.height = incomeHeightInPixels;  // Set scaled height for income
-        incomeParams.width = dpToPx(60);  // Set fixed width for the bar
-        incomeParams.setMargins(dpToPx(10), dpToPx(5), dpToPx(10), dpToPx(5)); // Add margins for better spacing
+        incomeParams.height = incomeHeightInPixels;
+        incomeParams.width = dpToPx(60);
+        incomeParams.setMargins(dpToPx(10), dpToPx(5), dpToPx(10), dpToPx(5));
         binding.barIncome.setLayoutParams(incomeParams);
 
-        // Set the height for the expense bar dynamically using ViewBinding
         LinearLayout.LayoutParams expenseParams = (LinearLayout.LayoutParams) binding.barExpense.getLayoutParams();
-        expenseParams.height = expenseHeightInPixels;  // Set scaled height for expense
-        expenseParams.width = dpToPx(60);  // Set fixed width for the bar
-        expenseParams.setMargins(dpToPx(10), dpToPx(5), dpToPx(10), dpToPx(5)); // Add margins for better spacing
+        expenseParams.height = expenseHeightInPixels;
+        expenseParams.width = dpToPx(60);
+        expenseParams.setMargins(dpToPx(10), dpToPx(5), dpToPx(10), dpToPx(5));
         binding.barExpense.setLayoutParams(expenseParams);
 
-        // Set the income and expense text values using ViewBinding
         binding.incomeValueText.setText(String.valueOf(income));
         binding.expenseValueText.setText(String.valueOf(expense));
 
-        // Optionally, adjust text size for better visibility
-        binding.incomeValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);  // Adjust text size
-        binding.expenseValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);  // Adjust text size
-        binding.incomeLabelText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);  // Adjust label size
-        binding.expenseLabelText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);  // Adjust label size
+        binding.incomeValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        binding.expenseValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        binding.incomeLabelText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        binding.expenseLabelText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
     }
 
-    // Convert dp to pixels
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
 
-    // Method to trigger PDF creation and location selection
-    private void downloadTransactionReport() {
-        // Trigger file chooser to select location and file name
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/pdf");
-        intent.putExtra(Intent.EXTRA_TITLE, "TransactionReport.pdf");
-
-        startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == CREATE_FILE_REQUEST_CODE && resultCode == getActivity().RESULT_OK) {
-            Uri uri = null;
-            if (data != null) {
-                uri = data.getData();  // Get the Uri of the selected file location
-                if (uri != null) {
-                    // Now generate and write the PDF to the selected location
-                    generatePdfAndSave(uri);
-                }
+    private void checkStoragePermissionAndDownload() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            // No need to request WRITE_EXTERNAL_STORAGE permission for Android 10 (API 29) and above.
+            downloadTransactionReport();
+        } else {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                downloadTransactionReport();
+            } else {
+                // Request storage permission for Android 9 (API 28) and below
+                requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
         }
     }
-    // Method to generate a PDF and save it to the selected location
-    private void generatePdfAndSave(Uri uri) {
-        // Create a new PdfDocument
+
+    private void downloadTransactionReport() {
+        // Get the transactions for the logged-in user within the selected date range
+        List<TransactionModel> transactions = dbHelper.getAllTransactionsForPDF(loggedInUserId, startDate, endDate);
+
+        // Check if the list is empty
+        if (transactions == null || transactions.isEmpty()) {
+            // Show a message and return without creating the PDF
+            Toast.makeText(getContext(), "No transactions available for the selected date range.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        // Retrieve total income, expense, and turnover
+        double totalIncome = dbHelper.getTotalIncome(loggedInUserId,startDate, endDate);
+        double totalExpense = dbHelper.getTotalExpense(loggedInUserId,startDate, endDate);
+        double totalTurnover = dbHelper.getTotalTransactionAmount(loggedInUserId, startDate, endDate);
+
+
+        // Using Downloads folder for easier access
+        File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File moneyBookFolder = new File(downloadsFolder, "MoneyBook");
+
+        // Create the MoneyBook folder if it doesn't exist
+        if (!moneyBookFolder.exists()) {
+            boolean folderCreated = moneyBookFolder.mkdirs();
+            if (!folderCreated) {
+                Toast.makeText(getContext(), "Failed to create MoneyBook folder.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        // Generate a unique file name using the current date and time
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+        String fileName = "TransactionReport_" + timeStamp + ".pdf";
+
+        // File path for the PDF with current date and time appended
+        File pdfFile = new File(moneyBookFolder, fileName);
+
+        // Proceed to generate and save the PDF
+        generatePdfAndSave(pdfFile, transactions, totalIncome, totalExpense, totalTurnover);
+    }
+
+
+    private void generatePdfAndSave(File pdfFile, List<TransactionModel> transactions, double totalIncome, double totalExpense, double totalTurnover) {
         PdfDocument pdfDocument = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(300, 600, 1).create();
-        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
 
-        // Prepare the canvas to draw on the PDF
-        Canvas canvas = page.getCanvas();
+        int pageWidth = 800;
+        int pageHeight = 600;
+        int rowsPerPage = 25;
+        int yPosition = 120;
+        int currentPage = 1;
+
         Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(14);
 
-        // Draw content on the PDF
-        canvas.drawText("Transaction Report", 80, 50, paint);
-        canvas.drawText("Income: " + String.format("%.2f", income), 80, 100, paint);
-        canvas.drawText("Expense: " + String.format("%.2f", expense), 80, 150, paint);
-        canvas.drawText("Date Range: " + startDate + " to " + endDate, 80, 200, paint);
-
-        // Finish the page
-        pdfDocument.finishPage(page);
-
-        // Write the document content to the file
         try {
-            OutputStream outputStream = getActivity().getContentResolver().openOutputStream(uri);
-            pdfDocument.writeTo(outputStream);
+            // Create the first page
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, currentPage).create();
+            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
 
-            // Close the document and the output stream
-            pdfDocument.close();
-            outputStream.close();
+            Canvas canvas = page.getCanvas();
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(14);
 
-            Toast.makeText(getContext(), "PDF saved successfully!", Toast.LENGTH_SHORT).show();
+            // Draw totals at the top of the page
+            drawTotalsAtTop(canvas, paint, totalIncome, totalExpense, totalTurnover);
+
+            // Draw the table headers
+            drawTableHeaders(canvas, paint);
+
+            // Draw transactions
+            for (int i = 0; i < transactions.size(); i += rowsPerPage) {
+                if (i > 0) { // For subsequent pages, start new page
+                    pdfDocument.finishPage(page);
+                    currentPage++;
+                    pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, currentPage).create();
+                    page = pdfDocument.startPage(pageInfo);
+                    canvas = page.getCanvas();
+                }
+
+                int startIndex = i;
+                int endIndex = Math.min(i + rowsPerPage, transactions.size());
+                drawTransactionsOnPage(canvas, paint, transactions.subList(startIndex, endIndex), yPosition);
+            }
+
+            pdfDocument.finishPage(page);
+
+            // Save PDF to file
+            try (FileOutputStream outputStream = new FileOutputStream(pdfFile)) {
+                pdfDocument.writeTo(outputStream);
+                Toast.makeText(getContext(), "PDF saved successfully in MoneyBook folder!", Toast.LENGTH_SHORT).show();
+            }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("PDFError", "Error saving PDF: " + e.getMessage());
             Toast.makeText(getContext(), "Error saving PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        } finally {
+            pdfDocument.close();
+        }
+    }
+
+    private void drawTotalsAtTop(Canvas canvas, Paint paint, double totalIncome, double totalExpense, double totalTurnover) {
+        int yPosition = 30; // Adjust Y position as needed for spacing
+        paint.setTextSize(18);
+
+        // Draw the totals
+        canvas.drawText("Total Income: " + totalIncome, 10, yPosition, paint);
+        yPosition += 20;
+        canvas.drawText("Total Expense: " + totalExpense, 10, yPosition, paint);
+        yPosition += 20;
+        canvas.drawText("Total Turnover: " + totalTurnover, 10, yPosition, paint);
+
+        // Add some space after totals
+        yPosition += 30;
+    }
+
+
+    private void drawTableHeaders(Canvas canvas, Paint paint) {
+        canvas.drawText("ID", 10, 100, paint);
+        canvas.drawText("Amount", 50, 100, paint);
+        canvas.drawText("Date", 160, 100, paint);
+        canvas.drawText("Category", 350, 100, paint);
+        canvas.drawText("Type", 490, 100, paint);
+        canvas.drawText("Description", 600, 100, paint);
+    }
+
+    private void drawTransactionsOnPage(Canvas canvas, Paint paint, List<TransactionModel> transactions, int initialYPosition) {
+        int yPosition = initialYPosition;
+
+
+        for (TransactionModel transaction : transactions) {
+            canvas.drawText(String.valueOf(transaction.getTransactionId()), 10, yPosition, paint);
+            canvas.drawText(String.valueOf(transaction.getTransactionAmount()), 50, yPosition, paint);
+            canvas.drawText(transaction.getTransactionDate(), 160, yPosition, paint);
+            canvas.drawText(transaction.getCategoryName(), 350, yPosition, paint);
+            canvas.drawText(transaction.getTransactionType(), 490, yPosition, paint);
+            canvas.drawText(transaction.getTransactionDescription(), 600, yPosition, paint);
+            yPosition += 20;
         }
     }
 
 
-
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         binding = null;
     }
 }

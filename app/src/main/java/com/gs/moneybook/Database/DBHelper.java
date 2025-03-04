@@ -707,17 +707,81 @@ public class DBHelper extends SQLiteOpenHelper {
         return transactionsList;
     }
 
-    public double getTotalIncome(String startDate, String endDate) {
+    public List<TransactionModel> getAllTransactionsForPDF(int userID, String startDate, String endDate) {
+        List<TransactionModel> transactionList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS, null);
+
+//        String selectQuery = " SELECT " +COLUMN_TRANSACTION_ID +","+  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE
+//                + ","+COLUMN_TRANSACTION_AMOUNT+ "," + COLUMN_TRANSACTION_DESCRIPTION + ","+ COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS
+//                +" where "+ COLUMN_TRANSACTION_USER_ID + " = "+  userID;
+
+        String selectQuery = "SELECT " + COLUMN_TRANSACTION_ID + ", " + COLUMN_TRANSACTION_CATEGORY_ID + ", " + COLUMN_TRANSACTION_DATE
+                + ", " + COLUMN_TRANSACTION_AMOUNT + ", " + COLUMN_TRANSACTION_DESCRIPTION + ", " + COLUMN_TRANSACTION_TYPE
+                + " FROM " + TABLE_TRANSACTIONS
+                + " WHERE " + COLUMN_TRANSACTION_USER_ID + " = " + userID
+                + " AND DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+        Log.d("DBHelper_Debug", "getTransactions: Executing query: " + selectQuery);
+
+        cursor = db.rawQuery(selectQuery, null);
+
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                TransactionModel transaction = new TransactionModel();
+
+                int transactionIdIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_ID);
+                int transactionAmountIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
+                int transactionDateIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
+                int categoryNameIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_CATEGORY_ID);
+                int transactionTypeIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_TYPE);
+                int transactionDescriptionIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DESCRIPTION);
+
+                transaction.setTransactionId(cursor.getInt(transactionIdIndex));
+                transaction.setTransactionAmount(cursor.getDouble(transactionAmountIndex));
+                transaction.setTransactionDate(cursor.getString(transactionDateIndex));
+                transaction.setCategoryName(cursor.getString(categoryNameIndex));
+                transaction.setTransactionType(cursor.getString(transactionTypeIndex));
+                transaction.setTransactionDescription(cursor.getString(transactionDescriptionIndex));
+
+              /*  transaction.setTransactionId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID)));
+                transaction.setTransactionAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT)));
+                transaction.setTransactionDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE)));
+                transaction.setCategoryName(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID)));
+                //transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID)));
+                transaction.setTransactionType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE)));
+                //transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID)));
+                transaction.setTransactionDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DESCRIPTION)));
+*/
+                transactionList.add(transaction);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return transactionList;
+    }
+
+
+    public double getTotalIncome(int userId, String startDate, String endDate) {
         SQLiteDatabase db = this.getReadableDatabase();
         double totalIncome = 0.0;
         Cursor cursor = null;
 
         try {
             // Forming the query with single quotes around the dates
+//            String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
+//                    "FROM " + TABLE_TRANSACTIONS + " " +
+//                    "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Income' AND " +
+//                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
             String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
                     "FROM " + TABLE_TRANSACTIONS + " " +
                     "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Income' AND " +
-                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "' AND " +
+                    COLUMN_TRANSACTION_USER_ID + " = " + userId;
 
             Log.d("SQL_QUERY", query + " [" + startDate + ", " + endDate + "]"); // Log the query
 
@@ -743,7 +807,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public double getTotalExpense(String startDate, String endDate) {
+    public double getTotalExpense(int userId, String startDate, String endDate) {
         SQLiteDatabase db = this.getReadableDatabase();
         double totalExpense = 0.0;
 
@@ -752,7 +816,8 @@ public class DBHelper extends SQLiteOpenHelper {
             String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
                     "FROM " + TABLE_TRANSACTIONS + " " +
                     "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Expense' AND " +
-                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "' AND " +
+                    COLUMN_TRANSACTION_USER_ID + " = " + userId;
 
 
             //Cursor cursor = db.rawQuery(query, new String[]{startDate, endDate});
@@ -772,5 +837,11 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return totalExpense;
+    }
+
+    public double getTotalTransactionAmount(int userId, String startDate, String endDate){
+        double totalTransactionAmount = getTotalIncome(userId,startDate,endDate) + getTotalExpense(userId,startDate,endDate);
+
+        return totalTransactionAmount;
     }
 }
