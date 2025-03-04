@@ -36,8 +36,7 @@ public class TransactionAnalyticsFragment extends Fragment {
 
          income = dbHelper.getTotalIncome(startDate, endDate);
          expense = dbHelper.getTotalExpense(startDate, endDate);
-        //System.out.println(income);
-        //System.out.println(expense);
+
 
         Toast.makeText(getContext(), "income="+income, Toast.LENGTH_SHORT).show();
 
