@@ -1,6 +1,12 @@
 package com.gs.moneybook.Fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -9,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Utilities.DateUtils;
 import com.gs.moneybook.databinding.FragmentTransactionAnalyticsBinding;
 
+import java.io.OutputStream;
 import java.util.Calendar;
 
 public class TransactionAnalyticsFragment extends Fragment {
@@ -26,6 +34,9 @@ public class TransactionAnalyticsFragment extends Fragment {
     private String startDate = "";
     private String endDate = "";
     private Calendar startCalendar;  // New Calendar object to track start date
+
+    private static final int CREATE_FILE_REQUEST_CODE = 1;
+
 
     public TransactionAnalyticsFragment() {
         // Required empty public constructor
@@ -43,6 +54,13 @@ public class TransactionAnalyticsFragment extends Fragment {
         startDate = DateUtils.getCurrentDateForDatabase();
         endDate = DateUtils.getCurrentDateForDatabase();
         calculateAndDisplayAnalytics();
+
+        binding.btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadTransactionReport();
+            }
+        });
 
 
         // Initialize the startCalendar as a new Calendar instance
@@ -176,6 +194,73 @@ public class TransactionAnalyticsFragment extends Fragment {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
+
+    // Method to trigger PDF creation and location selection
+    private void downloadTransactionReport() {
+        // Trigger file chooser to select location and file name
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+        intent.putExtra(Intent.EXTRA_TITLE, "TransactionReport.pdf");
+
+        startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if (requestCode == CREATE_FILE_REQUEST_CODE && resultCode == getActivity().RESULT_OK) {
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();  // Get the Uri of the selected file location
+                if (uri != null) {
+                    // Now generate and write the PDF to the selected location
+                    generatePdfAndSave(uri);
+                }
+            }
+        }
+    }
+    // Method to generate a PDF and save it to the selected location
+    private void generatePdfAndSave(Uri uri) {
+        // Create a new PdfDocument
+        PdfDocument pdfDocument = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(300, 600, 1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+
+        // Prepare the canvas to draw on the PDF
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(14);
+
+        // Draw content on the PDF
+        canvas.drawText("Transaction Report", 80, 50, paint);
+        canvas.drawText("Income: " + String.format("%.2f", income), 80, 100, paint);
+        canvas.drawText("Expense: " + String.format("%.2f", expense), 80, 150, paint);
+        canvas.drawText("Date Range: " + startDate + " to " + endDate, 80, 200, paint);
+
+        // Finish the page
+        pdfDocument.finishPage(page);
+
+        // Write the document content to the file
+        try {
+            OutputStream outputStream = getActivity().getContentResolver().openOutputStream(uri);
+            pdfDocument.writeTo(outputStream);
+
+            // Close the document and the output stream
+            pdfDocument.close();
+            outputStream.close();
+
+            Toast.makeText(getContext(), "PDF saved successfully!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error saving PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     @Override
     public void onDestroyView() {

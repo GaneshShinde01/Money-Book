@@ -49,6 +49,10 @@ dependencies {
 
     implementation ("androidx.recyclerview:recyclerview:1.3.1")
 
+    implementation ("androidx.core:core-ktx:1.9.0")
+    implementation ("androidx.documentfile:documentfile:1.0.1")
+
+
 
 
 }
