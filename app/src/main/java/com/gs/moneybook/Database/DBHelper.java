@@ -587,6 +587,25 @@ public class DBHelper extends SQLiteOpenHelper {
         return null; // Return null if the payment mode is not found
     }
 
+    private String getPaymentModeNameById(String paymentModeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_PAYMENT_MODE_NAME + " FROM " + TABLE_PAYMENT_MODES
+                + " WHERE " + COLUMN_PAYMENT_MODE_ID + " = ?", new String[]{(paymentModeId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String paymentModeName = cursor.getString(0);
+            //cursor.close();
+            return paymentModeName;
+        }
+
+        if (cursor != null) {
+            //cursor.close();
+        }
+        return null; // Return null if the payment mode is not found
+    }
+
+
+
 
     // Transactions Table - CRUD Operations
 
@@ -724,19 +743,34 @@ public class DBHelper extends SQLiteOpenHelper {
 //                + ","+COLUMN_TRANSACTION_AMOUNT+ "," + COLUMN_TRANSACTION_DESCRIPTION + ","+ COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS
 //                +" where "+ COLUMN_TRANSACTION_USER_ID + " = "+  userID;
 
-        String selectQuery = "SELECT " + COLUMN_TRANSACTION_ID + ", " + COLUMN_TRANSACTION_CATEGORY_ID + ", " + COLUMN_TRANSACTION_DATE
-                + ", " + COLUMN_TRANSACTION_AMOUNT + ", " + COLUMN_TRANSACTION_DESCRIPTION + ", " + COLUMN_TRANSACTION_TYPE
+       /* String selectQuery = "SELECT " + COLUMN_TRANSACTION_ID + ", " + COLUMN_TRANSACTION_CATEGORY_ID + ", " + COLUMN_TRANSACTION_DATE
+                + ", " + COLUMN_TRANSACTION_AMOUNT + ", " + COLUMN_TRANSACTION_DESCRIPTION + ", " + COLUMN_TRANSACTION_TYPE +", " + COLUMN_TRANSACTION_PAYMENT_MODE_ID
                 + " FROM " + TABLE_TRANSACTIONS
                 + " WHERE " + COLUMN_TRANSACTION_USER_ID + " = " + userID
                 + " AND DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+*/
+
+        String selectQuery = "SELECT t." + COLUMN_TRANSACTION_ID + ", t." + COLUMN_TRANSACTION_CATEGORY_ID + ", t." + COLUMN_TRANSACTION_DATE
+                + ", t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DESCRIPTION + ", t." + COLUMN_TRANSACTION_TYPE
+                + ", pm." + COLUMN_PAYMENT_MODE_NAME  // Getting payment mode name from payment mode table
+                + " FROM " + TABLE_TRANSACTIONS + " t"
+                + " JOIN " + TABLE_PAYMENT_MODES + " pm ON t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " = pm." + COLUMN_PAYMENT_MODE_ID
+                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userID
+                + " AND DATE(t." + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
 
         Log.d("DBHelper_Debug", "getTransactions: Executing query: " + selectQuery);
 
         cursor = db.rawQuery(selectQuery, null);
 
 
+
+
         if (cursor.moveToFirst()) {
             do {
+
+                //String paymentModeName = getPaymentModeNameById(COLUMN_TRANSACTION_PAYMENT_MODE_ID);
+
 
                 TransactionModel transaction = new TransactionModel();
 
@@ -746,6 +780,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 int categoryNameIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_CATEGORY_ID);
                 int transactionTypeIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_TYPE);
                 int transactionDescriptionIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DESCRIPTION);
+                int transactionPaymentModeIndex = cursor.getColumnIndexOrThrow(COLUMN_PAYMENT_MODE_NAME);
+
 
                 transaction.setTransactionId(cursor.getInt(transactionIdIndex));
                 transaction.setTransactionAmount(cursor.getDouble(transactionAmountIndex));
@@ -753,6 +789,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 transaction.setCategoryName(cursor.getString(categoryNameIndex));
                 transaction.setTransactionType(cursor.getString(transactionTypeIndex));
                 transaction.setTransactionDescription(cursor.getString(transactionDescriptionIndex));
+                transaction.setPaymentModeName((cursor.getString(transactionPaymentModeIndex)));
 
               /*  transaction.setTransactionId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID)));
                 transaction.setTransactionAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT)));
@@ -840,7 +877,7 @@ public class DBHelper extends SQLiteOpenHelper {
             // Handle exceptions (e.g., log the error)
             e.printStackTrace();
         } finally {
-            db.close();
+            //db.close();
         }
 
         return totalExpense;
@@ -851,6 +888,116 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return totalTransactionAmount;
     }
+
+
+    // api for investment history
+
+
+    public List<InvestmentModel> getAllInvestmentsForPDF(int userID, String startDate, String endDate) {
+        List<InvestmentModel> investmentList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS, null);
+
+//        String selectQuery = " SELECT " +COLUMN_TRANSACTION_ID +","+  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE
+//                + ","+COLUMN_TRANSACTION_AMOUNT+ "," + COLUMN_TRANSACTION_DESCRIPTION + ","+ COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS
+//                +" where "+ COLUMN_TRANSACTION_USER_ID + " = "+  userID;
+
+//        String selectQuery = "SELECT " + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ", " + COLUMN_TRANSACTION_DATE
+//                + ", " + COLUMN_TRANSACTION_AMOUNT + ", " + COLUMN_TRANSACTION_DESCRIPTION
+//                + " FROM " + TABLE_TRANSACTIONS
+//                + " WHERE " + COLUMN_TRANSACTION_USER_ID + " = " + userID
+//                + " AND " + COLUMN_TRANSACTION_CATEGORY_ID + " = 'Invested' "
+//                + " AND DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+        String selectQuery = "SELECT t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ", t." + COLUMN_TRANSACTION_DATE
+                + ", t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DESCRIPTION
+                + ", pm." + COLUMN_PAYMENT_MODE_NAME  // Fetching payment mode name from payment mode table
+                + " FROM " + TABLE_TRANSACTIONS + " t"
+                + " JOIN " + TABLE_PAYMENT_MODES + " pm ON t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " = pm." + COLUMN_PAYMENT_MODE_ID
+                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userID
+                + " AND t." + COLUMN_TRANSACTION_CATEGORY_ID + " = 'Invested' "
+                + " AND DATE(t." + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+
+        Log.d("DBHelper_Debug", "getInvestments: Executing query: " + selectQuery);
+
+        cursor = db.rawQuery(selectQuery, null);
+
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                //String paymentMode = getPaymentModeNameById(COLUMN_TRANSACTION_PAYMENT_MODE_ID);
+
+                InvestmentModel investmentModel = new InvestmentModel();
+
+                int investmentAmountIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
+                int investmentDateIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
+                int paymentModeIndex = cursor.getColumnIndexOrThrow(COLUMN_PAYMENT_MODE_NAME);
+                int investmentDescriptionIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DESCRIPTION);
+
+                investmentModel.setInvestmentAmount(cursor.getDouble(investmentAmountIndex));
+                investmentModel.setInvestmentDate(cursor.getString(investmentDateIndex));
+                investmentModel.setPaymentModeName(cursor.getString(paymentModeIndex));
+                investmentModel.setInvestmentDescription(cursor.getString(investmentDescriptionIndex));
+
+              /*  transaction.setTransactionId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID)));
+                transaction.setTransactionAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT)));
+                transaction.setTransactionDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE)));
+                transaction.setCategoryName(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID)));
+                //transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID)));
+                transaction.setTransactionType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE)));
+                //transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID)));
+                transaction.setTransactionDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DESCRIPTION)));
+*/
+                investmentList.add(investmentModel);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return investmentList;
+    }
+
+
+    public double getTotalInvestment(int userId, String startDate, String endDate) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double totalInvestment = 0.0;
+
+        try {
+            // Assuming startDate and endDate are in the format "YYYY-MM-DD"
+            String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
+                    "FROM " + TABLE_TRANSACTIONS + " " +
+                    "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Expense' AND " +
+                    COLUMN_TRANSACTION_CATEGORY_ID + " =  'Invested' AND " +
+                    "DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "' AND " +
+                    COLUMN_TRANSACTION_USER_ID + " = " + userId;
+
+            Log.d("DBHelper_Debug", "getInvestments: Executing query: " + query);
+
+
+            //Cursor cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            Cursor cursor = db.rawQuery(query,null);
+
+
+            if (cursor.moveToFirst()) {
+                totalInvestment = cursor.getDouble(0);
+            }
+
+            cursor.close();
+        } catch (Exception e) {
+            // Handle exceptions (e.g., log the error)
+            e.printStackTrace();
+        } finally {
+           // db.close();
+        }
+
+        return totalInvestment;
+    }
+
+
 
 
     //api for the reminder table

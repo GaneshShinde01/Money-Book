@@ -1,14 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.InvestmentHistoryFragment">
+    android:padding="16dp"
+    android:background="@color/bgAppColor">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</FrameLayout>
+        <!-- Investment History Title -->
+        <TextView
+            android:id="@+id/tv_investment_history_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Investment History"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="8dp"/>
+
+        <!-- Total Investment -->
+        <TextView
+            android:id="@+id/tv_total_investment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Investment: ₹0.00"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
+
+        <!-- Date Range Selection -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Start Date -->
+            <TextView
+                android:id="@+id/tv_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginEnd="16dp"/>
+
+            <!-- End Date -->
+            <TextView
+                android:id="@+id/tv_end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
+
+        <!-- Download Report Button -->
+        <ImageView
+            android:id="@+id/btn_download_investment_report"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_download"
+            android:background="@drawable/circle_shape"
+            android:scaleType="centerInside"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Bar Chart Section -->
+        <LinearLayout
+            android:id="@+id/barChartContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            android:weightSum="2"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp">
+
+            <!-- Expense Section -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="bottom">
+
+                <!-- Income Value Text at the top of the bar -->
+                <TextView
+                    android:id="@+id/expenseValueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="500000"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:gravity="center" />
+
+                <!-- Income Bar -->
+                <View
+                    android:id="@+id/barExpense"
+                    android:layout_width="20dp"
+                    android:layout_height="0dp"
+                    android:background="@color/barColor1"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Income Label -->
+                <TextView
+                    android:id="@+id/expenseLabelText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Income"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <!-- Expense Section -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="bottom">
+
+                <!-- Expense Value Text at the top of the bar -->
+                <TextView
+                    android:id="@+id/investmentValueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="300000"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:gravity="center" />
+
+                <!-- Expense Bar -->
+                <View
+                    android:id="@+id/barInvestment"
+                    android:layout_width="20dp"
+                    android:layout_height="0dp"
+                    android:background="@color/barColor2"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Expense Label -->
+                <TextView
+                    android:id="@+id/investmentLabelText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expense"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <!-- RecyclerView for Investment History -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_investment_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+</ScrollView>

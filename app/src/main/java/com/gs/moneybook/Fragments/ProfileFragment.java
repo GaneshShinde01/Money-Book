@@ -58,6 +58,14 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        binding.investmentHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadFragment(new InvestmentHistoryFragment());
+
+            }
+        });
+
         binding.allTransactionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

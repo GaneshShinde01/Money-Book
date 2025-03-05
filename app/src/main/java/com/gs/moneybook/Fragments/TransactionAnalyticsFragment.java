@@ -223,7 +223,7 @@ public class TransactionAnalyticsFragment extends Fragment {
     private void generatePdfAndSave(File pdfFile, List<TransactionModel> transactions, double totalIncome, double totalExpense, double totalTurnover) {
         PdfDocument pdfDocument = new PdfDocument();
 
-        int pageWidth = 800;
+        int pageWidth = 1000;
         int pageHeight = 600;
         int rowsPerPage = 25;
         int yPosition = 120;
@@ -282,7 +282,7 @@ public class TransactionAnalyticsFragment extends Fragment {
         paint.setTextSize(18);
 
         // Draw the totals
-        canvas.drawText("Total Income: " + totalIncome, 10, yPosition, paint);
+        canvas.drawText("Total Expense: " + totalIncome, 10, yPosition, paint);
         yPosition += 20;
         canvas.drawText("Total Expense: " + totalExpense, 10, yPosition, paint);
         yPosition += 20;
@@ -298,8 +298,9 @@ public class TransactionAnalyticsFragment extends Fragment {
         canvas.drawText("Amount", 50, 100, paint);
         canvas.drawText("Date", 160, 100, paint);
         canvas.drawText("Category", 350, 100, paint);
-        canvas.drawText("Type", 490, 100, paint);
-        canvas.drawText("Description", 600, 100, paint);
+        canvas.drawText("Type", 520, 100, paint);
+        canvas.drawText("Description", 630, 100, paint);
+        canvas.drawText("PaymentMode",740,100,paint);
     }
 
     private void drawTransactionsOnPage(Canvas canvas, Paint paint, List<TransactionModel> transactions, int initialYPosition) {
@@ -311,8 +312,9 @@ public class TransactionAnalyticsFragment extends Fragment {
             canvas.drawText(String.valueOf(transaction.getTransactionAmount()), 50, yPosition, paint);
             canvas.drawText(transaction.getTransactionDate(), 160, yPosition, paint);
             canvas.drawText(transaction.getCategoryName(), 350, yPosition, paint);
-            canvas.drawText(transaction.getTransactionType(), 490, yPosition, paint);
-            canvas.drawText(transaction.getTransactionDescription(), 600, yPosition, paint);
+            canvas.drawText(transaction.getTransactionType(), 520, yPosition, paint);
+            canvas.drawText(transaction.getTransactionDescription(), 630, yPosition, paint);
+            canvas.drawText(transaction.getPaymentModeName(), 740, yPosition, paint);
             yPosition += 20;
         }
     }
