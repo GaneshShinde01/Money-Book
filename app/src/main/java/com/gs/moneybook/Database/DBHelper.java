@@ -347,8 +347,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void defaultCategories(SQLiteDatabase db) {
         // Define categories as arrays
-        String[] expenseCategories = {"Groceries", "Rent", "Utilities", "Transport", "Entertainment", "Dining Out", "Health", "Insurance", "Shopping", "Bills"};
-        String[] incomeCategories = {"Salary", "Investment", "Freelancing", "Gifts", "Interest", "Rental Income"};
+        String[] expenseCategories = {"Groceries", "Rent", "Utilities", "Transport", "Entertainment", "Dining Out", "Health", "Insurance", "Shopping", "Bills","Invested"};
+        String[] incomeCategories = {"Salary", "InvestmentIncome", "Freelancing", "Gifts", "Interest", "Rental Income"};
 
         // Insert expense categories
         for (String category : expenseCategories) {
