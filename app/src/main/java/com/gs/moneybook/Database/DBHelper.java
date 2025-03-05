@@ -892,6 +892,74 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // api for investment history
 
+    public List<InvestmentModel> getAllInvestments(int userID) {
+        List<InvestmentModel> investmentList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS, null);
+
+//        String selectQuery = " SELECT " +COLUMN_TRANSACTION_ID +","+  COLUMN_TRANSACTION_CATEGORY_ID + ","+ COLUMN_TRANSACTION_DATE
+//                + ","+COLUMN_TRANSACTION_AMOUNT+ "," + COLUMN_TRANSACTION_DESCRIPTION + ","+ COLUMN_TRANSACTION_TYPE + " from "+ TABLE_TRANSACTIONS
+//                +" where "+ COLUMN_TRANSACTION_USER_ID + " = "+  userID;
+
+//        String selectQuery = "SELECT " + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ", " + COLUMN_TRANSACTION_DATE
+//                + ", " + COLUMN_TRANSACTION_AMOUNT + ", " + COLUMN_TRANSACTION_DESCRIPTION
+//                + " FROM " + TABLE_TRANSACTIONS
+//                + " WHERE " + COLUMN_TRANSACTION_USER_ID + " = " + userID
+//                + " AND " + COLUMN_TRANSACTION_CATEGORY_ID + " = 'Invested' "
+//                + " AND DATE(" + COLUMN_TRANSACTION_DATE + ") BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+        String selectQuery = "SELECT t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ", t." + COLUMN_TRANSACTION_DATE
+                + ", t." + COLUMN_TRANSACTION_AMOUNT + ", t." + COLUMN_TRANSACTION_DESCRIPTION
+                + ", pm." + COLUMN_PAYMENT_MODE_NAME  // Fetching payment mode name from payment mode table
+                + " FROM " + TABLE_TRANSACTIONS + " t"
+                + " JOIN " + TABLE_PAYMENT_MODES + " pm ON t." + COLUMN_TRANSACTION_PAYMENT_MODE_ID + " = pm." + COLUMN_PAYMENT_MODE_ID
+                + " WHERE t." + COLUMN_TRANSACTION_USER_ID + " = " + userID
+                + " AND t." + COLUMN_TRANSACTION_CATEGORY_ID + " = 'Invested' ";
+
+
+        Log.d("DBHelper_Debug", "getInvestments: Executing query: " + selectQuery);
+
+        cursor = db.rawQuery(selectQuery, null);
+
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                //String paymentMode = getPaymentModeNameById(COLUMN_TRANSACTION_PAYMENT_MODE_ID);
+
+                InvestmentModel investmentModel = new InvestmentModel();
+
+                int investmentAmountIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_AMOUNT);
+                int investmentDateIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DATE);
+                int paymentModeIndex = cursor.getColumnIndexOrThrow(COLUMN_PAYMENT_MODE_NAME);
+                int investmentDescriptionIndex = cursor.getColumnIndexOrThrow(COLUMN_TRANSACTION_DESCRIPTION);
+
+                investmentModel.setInvestmentAmount(cursor.getDouble(investmentAmountIndex));
+                investmentModel.setInvestmentDate(cursor.getString(investmentDateIndex));
+                investmentModel.setPaymentModeName(cursor.getString(paymentModeIndex));
+                investmentModel.setInvestmentDescription(cursor.getString(investmentDescriptionIndex));
+
+              /*  transaction.setTransactionId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_ID)));
+                transaction.setTransactionAmount(cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT)));
+                transaction.setTransactionDate(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DATE)));
+                transaction.setCategoryName(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY_ID)));
+                //transaction.setUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_USER_ID)));
+                transaction.setTransactionType(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE)));
+                //transaction.setPaymentModeId(cursor.getInt(cursor.getColumnIndex(COLUMN_TRANSACTION_PAYMENT_MODE_ID)));
+                transaction.setTransactionDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DESCRIPTION)));
+*/
+                investmentList.add(investmentModel);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return investmentList;
+    }
+
+
 
     public List<InvestmentModel> getAllInvestmentsForPDF(int userID, String startDate, String endDate) {
         List<InvestmentModel> investmentList = new ArrayList<>();

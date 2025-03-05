@@ -94,8 +94,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             transactionTime = itemView.findViewById(R.id.transactionTimeTitem);
             transactionAmount = itemView.findViewById(R.id.transactionAmountTitem);
 
-
-
         }
     }
 

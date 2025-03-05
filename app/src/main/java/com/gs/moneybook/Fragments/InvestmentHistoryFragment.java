@@ -21,7 +21,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.gs.moneybook.Adapters.InvestmentAdapter;
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Model.InvestmentModel;
 import com.gs.moneybook.Utilities.DateUtils;
@@ -29,6 +31,7 @@ import com.gs.moneybook.databinding.FragmentInvestmentHistoryBinding;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -44,6 +47,8 @@ public class InvestmentHistoryFragment extends Fragment {
     private String startDate = "";
     private String endDate = "";
     private Calendar startCalendar;
+
+    private InvestmentAdapter investmentAdapter;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -76,6 +81,24 @@ public class InvestmentHistoryFragment extends Fragment {
 
         binding.tvStartDate.setOnClickListener(v -> showDatePickerDialog(true));
         binding.tvEndDate.setOnClickListener(v -> showDatePickerDialog(false));
+
+        List<InvestmentModel> investmentModels = dbHelper.getAllInvestments(loggedInUserId);
+
+        // Check if the list is empty before setting up the adapter
+        if (investmentModels != null && !investmentModels.isEmpty()) {
+            // Set up the RecyclerView with LinearLayoutManager
+            binding.recyclerViewInvestmentHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+            // Initialize the adapter with the list of investments
+            investmentAdapter = new InvestmentAdapter(requireContext(), investmentModels);
+
+            // Set the adapter to the RecyclerView
+            binding.recyclerViewInvestmentHistory.setAdapter(investmentAdapter);
+        } else {
+            // Handle the case when no investments are available
+            Toast.makeText(requireContext(), "No investment history available.", Toast.LENGTH_SHORT).show();
+        }
+
 
         return view;
     }
