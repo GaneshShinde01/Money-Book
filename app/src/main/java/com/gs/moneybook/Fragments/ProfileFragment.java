@@ -55,7 +55,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).loadFragment(new TransactionAnalyticsFragment());
-
             }
         });
 
@@ -63,6 +62,13 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).loadFragment(new AllTransactionsFragment());
+            }
+        });
+
+        binding.calendarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment());
             }
         });
 
