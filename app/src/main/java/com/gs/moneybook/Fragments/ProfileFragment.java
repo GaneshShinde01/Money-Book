@@ -68,7 +68,7 @@ public class ProfileFragment extends Fragment {
         binding.calendarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment());
+                ((MainActivity)getActivity()).loadFragment(new CalendarFragment());
             }
         });
 

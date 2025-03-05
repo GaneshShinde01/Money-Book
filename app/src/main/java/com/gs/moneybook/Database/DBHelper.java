@@ -10,12 +10,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.Date;
 import androidx.annotation.Nullable;
 
 import com.gs.moneybook.Model.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -182,8 +188,9 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_REMINDERS = "CREATE TABLE " + TABLE_REMINDERS + "("
             + COLUMN_REMINDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_REMINDER_USER_ID + " INTEGER,"
-            + COLUMN_REMINDER_DATE + " TEXT,"
+            + COLUMN_REMINDER_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
             + COLUMN_REMINDER_DESCRIPTION + " TEXT" + ")";
+
 
     // Constructor
     public DBHelper(Context context) {
@@ -844,4 +851,112 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return totalTransactionAmount;
     }
+
+
+    //api for the reminder table
+
+
+    public void addReminder(int userId, long date, String description) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // Log values for debugging with human-readable date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = sdf.format(new Date(date));
+
+        values.put(COLUMN_REMINDER_USER_ID, userId);
+        values.put(COLUMN_REMINDER_DATE, String.valueOf(formattedDate));
+        values.put(COLUMN_REMINDER_DESCRIPTION, description);
+
+
+        Log.d("DBHelper", "UserId: " + userId);
+        Log.d("DBHelper", "Date (milliseconds): " + date);
+        Log.d("DBHelper", "Formatted Date: " + formattedDate);  // Log the human-readable date
+        Log.d("DBHelper", "Description: " + description);
+
+        // Insert or update the reminder/note for the given date and user
+        long rowId = db.insertWithOnConflict(TABLE_REMINDERS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        Log.d("DBHelper", "Insert or update successful. Row ID: " + rowId);
+    }
+
+    public void updateReminder(int userId, long date, String newDescription) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // Log values for debugging with human-readable date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = sdf.format(new Date(date));
+
+        // Set the new description
+        values.put(COLUMN_REMINDER_DESCRIPTION, newDescription);
+
+        // Define the condition for update (WHERE clause)
+        String whereClause = COLUMN_REMINDER_USER_ID + " = ? AND " + COLUMN_REMINDER_DATE + " = ?";
+        String[] whereArgs = {String.valueOf(userId), formattedDate};
+
+        // Log information for debugging
+        Log.d("DBHelper", "UserId: " + userId);
+        Log.d("DBHelper", "Date (milliseconds): " + date);
+        Log.d("DBHelper", "Formatted Date: " + formattedDate);  // Log the human-readable date
+        Log.d("DBHelper", "New Description: " + newDescription);
+
+        // Update the reminder description for the given userId and date
+        int rowsAffected = db.update(TABLE_REMINDERS, values, whereClause, whereArgs);
+        Log.d("DBHelper", "Update successful. Rows affected: " + rowsAffected);
+    }
+
+
+
+    // Get the reminder/note for a specific date and user
+    public String getReminderForDate(int userId, long date) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = sdf.format(new Date(date));
+
+        // Convert the date to a string and ensure it's enclosed in single quotes in the query
+        String selectQuery = "SELECT " + COLUMN_REMINDER_DESCRIPTION + " FROM " + TABLE_REMINDERS
+                + " WHERE " + COLUMN_REMINDER_USER_ID + " = " + userId
+                + " AND DATE(" + COLUMN_REMINDER_DATE + ") = '" + formattedDate + "'";  // Use DATE() function on reminder date
+
+        Log.d("DBHelper", "Executing query: " + selectQuery);  // Log the query for debugging
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Log.d("DBHelper_Debug","Cursor Count:" + cursor.getCount());
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Log.d("DBHelper_Debug", "getTransactions: Cursor moved to first row.");
+
+            int descriptionIndex = cursor.getColumnIndexOrThrow(COLUMN_REMINDER_DESCRIPTION);
+            String description = cursor.getString(descriptionIndex);
+            System.out.println(description);
+            cursor.close();
+            return description;
+        }
+        return null;
+    }
+
+
+    // Delete the reminder/note for a specific date and user
+    public void deleteReminderForDate(int userId, long date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Format the date as 'yyyy-MM-dd'
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = sdf.format(new Date(date));
+
+        // Proper delete query, no need to manually add quotes around the formattedDate
+        String whereClause = COLUMN_REMINDER_USER_ID + " = ? AND DATE(" + COLUMN_REMINDER_DATE + ") = ?";
+        String[] whereArgs = new String[]{String.valueOf(userId), formattedDate};  // No need for single quotes, handled automatically
+
+        // Execute delete
+        db.delete(TABLE_REMINDERS, whereClause, whereArgs);
+
+        // db.close(); // Optional, depending on how you handle database closing in your app
+    }
+
+
+
+
+
 }

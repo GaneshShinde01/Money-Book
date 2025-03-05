@@ -15,4 +15,25 @@
         <item name="android:iconTint">#FF4081</item>
 
     </style>
+
+
+    <!-- Style for weekday text -->
+    <style name="CalendarWeekDayTextAppearance">
+        <item name="android:textColor">@color/weekdayTextColor</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Style for date text -->
+    <style name="CalendarDateTextAppearance">
+        <item name="android:textColor">@color/dateTextColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Style for today's date to make it visible -->
+    <style name="CalendarTodayTextAppearance">
+        <item name="android:textColor">@color/todayTextColor</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

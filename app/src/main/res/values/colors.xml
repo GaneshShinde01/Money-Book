@@ -14,4 +14,14 @@
     <color name="barColor3">#FFAB91</color>
     <color name="barColor4">#F48FB1</color>
 
+    <color name="selectedDateBarColor">#4BBDB3</color>
+    <color name="focusedDateColor">#76BAF0</color>
+    <color name="unfocusedDateColor">#E5B6ED</color>
+
+    <color name="weekdayTextColor">#580264</color>
+    <color name="dateTextColor">#000000</color>
+    <color name="todayTextColor">#EF5425</color>
+
+
+
 </resources>

@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Fragments.CalendarFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Dynamic CalendarView with customized text color and appearance -->
+    <CalendarView
+        android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="16dp"
+        android:firstDayOfWeek="2"
+        android:weekNumberColor="@color/barColor1"
+        android:weekDayTextAppearance="@style/CalendarWeekDayTextAppearance"
+        android:dateTextAppearance="@style/CalendarDateTextAppearance"
+        android:showWeekNumber="true"
+        android:selectedDateVerticalBar="@color/selectedDateBarColor"
+        android:focusedMonthDateColor="@color/focusedDateColor"
+    android:unfocusedMonthDateColor="@color/unfocusedDateColor"
+    />
 
-</FrameLayout>
+</RelativeLayout>
