@@ -282,7 +282,7 @@ public class TransactionAnalyticsFragment extends Fragment {
         paint.setTextSize(18);
 
         // Draw the totals
-        canvas.drawText("Total Expense: " + totalIncome, 10, yPosition, paint);
+        canvas.drawText("Total Income: " + totalIncome, 10, yPosition, paint);
         yPosition += 20;
         canvas.drawText("Total Expense: " + totalExpense, 10, yPosition, paint);
         yPosition += 20;
