@@ -106,21 +106,4 @@ public class AllTransactionsFragment extends Fragment {
         //refreshTransactions();
     }
 
-   /* private void refreshTransactions() {
-        executorService.execute(() -> {
-            List<TransactionModel> transactions = dbHelper.getTransactions();
-            Log.d("AllTransationFragment", "Transaction list size: " + transactions.size());
-            requireActivity().runOnUiThread(() -> {
-                if (transactions.isEmpty()) {
-                    binding.emptyTransactionsTextView.setVisibility(View.VISIBLE);
-                    binding.transactionRecyclerView.setVisibility(View.GONE);
-                } else {
-                    binding.emptyTransactionsTextView.setVisibility(View.GONE);
-                    binding.transactionRecyclerView.setVisibility(View.VISIBLE);
-                    transactionAdapter = new TransactionAdapter(requireContext(), transactions);
-                    binding.transactionRecyclerView.setAdapter(transactionAdapter);
-                }
-            });
-        });
-    }*/
 }
