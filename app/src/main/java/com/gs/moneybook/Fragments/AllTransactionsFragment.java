@@ -103,7 +103,7 @@ public class AllTransactionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //refreshTransactions();
+
     }
 
 }
