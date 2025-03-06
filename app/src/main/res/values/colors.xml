@@ -5,6 +5,7 @@
 
     <color name="bottomNavBarColor">#C4ABEB</color> <!-- Example purple color -->
     <color name="bgAppColor">#D8BFD8</color>
+    <color name="bgAppColorSecondary">#E7E5A7</color>
 
     <color name="expense_red">#FF1100</color>
     <color name="income_green">#04FF0F</color>

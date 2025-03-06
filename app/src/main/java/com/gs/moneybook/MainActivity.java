@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,8 +25,9 @@ import com.gs.moneybook.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
     private boolean doubleBackToExitPressedOnce = false;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +35,13 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        toolbar = findViewById(R.id.toolBarMain);
+        setSupportActionBar(toolbar);
+
+
         // Load the default fragment (DashboardFragment) initially
         if (savedInstanceState == null) {
-            loadFragment(new DashboardFragment());
+            loadFragment(new DashboardFragment(),"Dashboard");
         }
 
         // Set BottomNavigationView listener
@@ -45,14 +51,15 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
 
                 if (id == R.id.navDashboard) {
-                    loadFragment(new DashboardFragment());
+                    loadFragment(new DashboardFragment(),"Dashboard");
+
                     return true;
                 } else if (id == R.id.navAdd) {
                     showPopUpMenu();
-                    loadFragment(new BlankFragment());
+                    loadFragment(new BlankFragment(),"");
                     return true;
                 } else if (id == R.id.navProfile) {
-                    loadFragment(new ProfileFragment());
+                    loadFragment(new ProfileFragment(),"Profile");
                     return true;
                 }
                 return false;
@@ -65,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleOnBackPressed() {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.containerMain);
                 if (!(currentFragment instanceof DashboardFragment)) {
-                    loadFragment(new DashboardFragment());
+                    loadFragment(new DashboardFragment(),"Dashboard");
                     binding.bottomNav.setSelectedItemId(R.id.navDashboard);  // Set the home item selected
                 } else {
                     if (binding.drawerLayout.isDrawerOpen(binding.navigationView)) {
@@ -98,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.Income) {
-                    loadFragment(new AddIncomeFragment());
+                    loadFragment(new AddIncomeFragment(),"Add Income");
                     return true;
                 } else if (id == R.id.expense) {
-                    loadFragment(new AddExpenseFragment());
+                    loadFragment(new AddExpenseFragment(),"Add Expense");
                     return true;
                 }
                 return false;
@@ -111,18 +118,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Load fragment method
-    public void loadFragment(Fragment fragment) {
+    public void loadFragment(Fragment fragment, String toolBarTitle) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.containerMain, fragment, fragment.getClass().getSimpleName());
         ft.commit();
 
 
+
+        binding.toolBarTitle.setText(toolBarTitle);
+
+
         // Enable the drawer only for DashboardFragment
         if (fragment instanceof DashboardFragment) {
             enableDrawer();
+
+
         } else {
             disableDrawer();
+
         }
     }
 
@@ -130,12 +144,24 @@ public class MainActivity extends AppCompatActivity {
     private void enableDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         binding.navigationView.setVisibility(View.VISIBLE);  // Show the navigation view
+        binding.drawerMenuIcon.setVisibility(View.VISIBLE);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setTitle("");
+        }
     }
 
     // Disable drawer method
     private void disableDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         binding.navigationView.setVisibility(View.GONE);  // Hide the navigation view
+        binding.drawerMenuIcon.setVisibility(View.GONE);
+
+        // Set toolbar title
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("");
+        }
     }
 
     @Override

@@ -33,35 +33,35 @@ public class ProfileFragment extends Fragment {
         binding.viewUserProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new ViewProfileFragment());
+                ((MainActivity)getActivity()).loadFragment(new ViewProfileFragment(),"View Profile");
             }
         });
 
         binding.addCategoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AddCategoryFragment());
+                ((MainActivity)getActivity()).loadFragment(new AddCategoryFragment(),"Add Category");
             }
         });
 
         binding.addPaymentModeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment());
+                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment(),"Add Payment Mode");
             }
         });
 
         binding.transactionAnalyticsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new TransactionAnalyticsFragment());
+                ((MainActivity)getActivity()).loadFragment(new TransactionAnalyticsFragment(),"Transaction Analytics");
             }
         });
 
         binding.investmentHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new InvestmentHistoryFragment());
+                ((MainActivity)getActivity()).loadFragment(new InvestmentHistoryFragment(),"Investment History");
 
             }
         });
@@ -69,14 +69,14 @@ public class ProfileFragment extends Fragment {
         binding.allTransactionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AllTransactionsFragment());
+                ((MainActivity)getActivity()).loadFragment(new AllTransactionsFragment(),"All Transactions");
             }
         });
 
         binding.calendarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new CalendarFragment());
+                ((MainActivity)getActivity()).loadFragment(new CalendarFragment(),"Calendar");
             }
         });
 

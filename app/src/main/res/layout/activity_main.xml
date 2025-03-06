@@ -15,11 +15,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/appBarMain"
+            >
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bottomNavBarColor"
+                android:id="@+id/toolBarMain">
+                <ImageView
+                    android:id="@+id/drawerMenuIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_icon"
+                    android:layout_marginEnd="10dp"
+                    android:padding="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/toolBarTitle"
+                    />
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
         <!-- Container for Fragments or Main Content -->
         <FrameLayout
             android:id="@+id/containerMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/appBarMain"
             android:layout_above="@+id/bottomNav"/>
 
         <!-- Bottom Navigation -->
@@ -39,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white"
+        android:background="@color/bottomNavBarColor"
         app:headerLayout="@layout/side_nav_header"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
