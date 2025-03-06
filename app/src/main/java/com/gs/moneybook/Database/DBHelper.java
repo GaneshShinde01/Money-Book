@@ -1,27 +1,20 @@
 package com.gs.moneybook.Database;
 
-import android.annotation.SuppressLint;
-import android.app.DownloadManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Date;
-import androidx.annotation.Nullable;
 
 import com.gs.moneybook.Model.*;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -45,9 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_CATEGORIES = "categories";
     private static final String TABLE_PAYMENT_MODES = "payment_modes";
     private static final String TABLE_TRANSACTIONS = "transactions";
-    private static final String TABLE_BUDGETS = "budgets";
-    private static final String TABLE_SAVINGS_GOALS = "savings_goals";
-    private static final String TABLE_RECURRING_TRANSACTIONS = "recurring_transactions";
+    private static final String TABLE_SAVINGS = "savings";
     private static final String TABLE_REMINDERS = "reminders";
 
     // User Table Columns
@@ -127,57 +118,22 @@ public class DBHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY (" + COLUMN_TRANSACTION_PAYMENT_MODE_ID + ") REFERENCES " + TABLE_PAYMENT_MODES + "(" + COLUMN_PAYMENT_MODE_ID + ")"
             + ")";
 
-    // Create Budgets Table
-    private static final String COLUMN_BUDGET_ID = "budgetId";
-    private static final String COLUMN_BUDGET_AMOUNT = "amount";
-    private static final String COLUMN_BUDGET_START_DATE = "startDate";
-    private static final String COLUMN_BUDGET_END_DATE = "endDate";
-    private static final String COLUMN_BUDGET_CATEGORY = "category";
-    private static final String COLUMN_BUDGET_TYPE = "budgetType";
+    // Create SAVINGSs Table
+    private static final String COLUMN_SAVINGS_ID = "savingsId";
+    private static final String COLUMN_SAVINGS_AMOUNT = "amount";
+    private static final String COLUMN_SAVINGS_DATE = "date";
+    private static final String COLUMN_SAVINGS_CATEGORY_NAME = "category";
+    private static final String COLUMN_SAVINGS_USER_ID = "userId";
+    private static final String COLUMN_SAVINGS_NOTE = "savingsNote";
 
-    private static final String CREATE_TABLE_BUDGETS = "CREATE TABLE " + TABLE_BUDGETS + "("
-            + COLUMN_BUDGET_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + COLUMN_BUDGET_AMOUNT + " REAL,"
-            + COLUMN_BUDGET_START_DATE + " TEXT,"
-            + COLUMN_BUDGET_END_DATE + " TEXT,"
-            + COLUMN_BUDGET_CATEGORY + " TEXT,"
-            + COLUMN_BUDGET_TYPE + " TEXT" + ")";
+    private static final String CREATE_TABLE_SAVINGS = "CREATE TABLE " + TABLE_SAVINGS + "("
+            + COLUMN_SAVINGS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_SAVINGS_AMOUNT + " REAL,"
+            + COLUMN_SAVINGS_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
+            + COLUMN_SAVINGS_CATEGORY_NAME + " TEXT,"
+            + COLUMN_SAVINGS_USER_ID + " INTEGER NOT NULL,"
+            + COLUMN_SAVINGS_NOTE + " TEXT" + ")";
 
-
-    // Create Savings Goals Table
-    private static final String COLUMN_SAVINGS_GOAL_ID = "svaingGoalId";
-    private static final String COLUMN_SAVINGS_GOAL_NAME = "goalName";
-    private static final String COLUMN_SAVINGS_GOAL_TARGET_AMOUNT = "targetAmount";
-    private static final String COLUMN_SAVINGS_GOAL_CURRENT_AMOUNT = "currentAmount";
-    private static final String COLUMN_SAVINGS_GOAL_DEADLINE = "goalDeadline";
-    private static final String COLUMN_SAVINGS_GOAL_STATUS = "status";
-
-    private static final String CREATE_TABLE_SAVINGS_GOALS = "CREATE TABLE " + TABLE_SAVINGS_GOALS + "("
-            + COLUMN_SAVINGS_GOAL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + COLUMN_SAVINGS_GOAL_NAME + " TEXT NOT NULL,"
-            + COLUMN_SAVINGS_GOAL_TARGET_AMOUNT + " REAL,"
-            + COLUMN_SAVINGS_GOAL_CURRENT_AMOUNT + " REAL,"
-            + COLUMN_SAVINGS_GOAL_DEADLINE + " TEXT,"
-            + COLUMN_SAVINGS_GOAL_STATUS + " TEXT" + ")";
-
-
-    // Create Recurring Transactions Table
-    private static final String COLUMN_RECURRING_TRANSACTION_ID = "recurringTransactionId";
-    private static final String COLUMN_RECURRING_TRANSACTION_NAME = "transactionName";
-    private static final String COLUMN_RECURRING_TRANSACTION_AMOUNT = "amount";
-    private static final String COLUMN_RECURRING_TRANSACTION_DATE = "transactionDate";
-    private static final String COLUMN_RECURRING_TRANSACTION_FREQUENCY = "frequency"; // Weekly, Monthly, Yearly
-    private static final String COLUMN_RECURRING_TRANSACTION_CATEGORY = "category";
-    private static final String COLUMN_RECURRING_TRANSACTION_TYPE = "transactionType"; // Income or Expense
-
-    private static final String CREATE_TABLE_RECURRING_TRANSACTIONS = "CREATE TABLE " + TABLE_RECURRING_TRANSACTIONS + "("
-            + COLUMN_RECURRING_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + COLUMN_RECURRING_TRANSACTION_NAME + " TEXT,"
-            + COLUMN_RECURRING_TRANSACTION_AMOUNT + " REAL,"
-            + COLUMN_RECURRING_TRANSACTION_DATE + " TEXT,"
-            + COLUMN_RECURRING_TRANSACTION_FREQUENCY + " TEXT,"
-            + COLUMN_RECURRING_TRANSACTION_CATEGORY + " TEXT,"
-            + COLUMN_RECURRING_TRANSACTION_TYPE + " TEXT" + ")";
 
     // Create Reminders Table
     private static final String COLUMN_REMINDER_ID = "reminderId";
@@ -206,9 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // Insert default payment modes
         insertDefaultPaymentModes(db);
         db.execSQL(CREATE_TABLE_TRANSACTIONS);
-        db.execSQL(CREATE_TABLE_BUDGETS);
-        db.execSQL(CREATE_TABLE_SAVINGS_GOALS);
-        db.execSQL(CREATE_TABLE_RECURRING_TRANSACTIONS);
+        db.execSQL(CREATE_TABLE_SAVINGS);
         db.execSQL(CREATE_TABLE_REMINDERS);
     }
 
@@ -218,9 +172,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAYMENT_MODES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAVINGS_GOALS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECURRING_TRANSACTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAVINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REMINDERS);
         onCreate(db);
     }
@@ -1169,6 +1121,63 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // db.close(); // Optional, depending on how you handle database closing in your app
     }
+
+
+    public double getSavingsAmountForDashboard(int userId) {
+        double savings = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Correct query with userId filtering and proper alias
+        String savingsQuery = "SELECT " +
+                "(SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Income' AND " + COLUMN_TRANSACTION_USER_ID + " = ?) - " +
+                "(SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Expense' AND " + COLUMN_TRANSACTION_USER_ID + " = ?) " +
+                "AS savings";
+
+        // Execute the query, passing userId as a parameter
+        Cursor cursor = db.rawQuery(savingsQuery, new String[]{String.valueOf(userId), String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Fetch the savings value using the alias "savings"
+            //savings = cursor.getDouble(cursor.getColumnIndexOrThrow("savings"));
+            savings = cursor.getDouble(0);
+            cursor.close();
+        }
+
+        return savings;
+    }
+
+
+    public double getTotalExpenseForDashboard(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double totalExpense = 0.0;
+
+        try {
+            // Assuming startDate and endDate are in the format "YYYY-MM-DD"
+            String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") " +
+                    "FROM " + TABLE_TRANSACTIONS + " " +
+                    "WHERE " + COLUMN_TRANSACTION_TYPE + " = 'Expense' AND " +
+                    COLUMN_TRANSACTION_USER_ID + " = " + userId;
+
+
+            //Cursor cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            Cursor cursor = db.rawQuery(query,null);
+
+
+            if (cursor.moveToFirst()) {
+                totalExpense = cursor.getDouble(0);
+            }
+
+            cursor.close();
+        } catch (Exception e) {
+            // Handle exceptions (e.g., log the error)
+            e.printStackTrace();
+        } finally {
+            //db.close();
+        }
+
+        return totalExpense;
+    }
+
 
 
 

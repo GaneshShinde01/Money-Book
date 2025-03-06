@@ -98,10 +98,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
 
+/*
     public void updateData(List<TransactionModel> newTransactions) {
         this.transactionModelList.clear();
         this.transactionModelList.addAll(newTransactions);
         notifyDataSetChanged();
     }
+*/
 
 }

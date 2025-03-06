@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bgAppColor"
     tools:context=".Fragments.DashboardFragment">
 
     <Button
@@ -11,5 +12,148 @@
         android:layout_height="wrap_content"
         android:text="Open Drawer" />
 
+    <!-- Income and Outcome Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:id="@+id/llSavingsAndExpenses"
+        android:layout_below="@+id/openDrawerButton"
+        android:background="@drawable/income_outcome_bg"
+        android:padding="16dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="24dp">
 
-</FrameLayout>
+    <!-- Income Section -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAVINGS"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+
+            <!-- Income Dropdown Icon -->
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/saving_icon"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTotalSavingsDashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹8,475"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#000000"/>
+
+    <!-- Outcome Section -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EXPENSES"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+
+            <!-- Outcome Dropdown Icon -->
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/spending"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTotalExpensesDashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹8,475"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llForTransactions"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/llSavingsAndExpenses"
+        android:layout_marginTop="20dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:text="Transactions"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/recyclerViewTransactionsDashboard"
+            android:layout_below="@+id/llSavingsAndExpenses"
+            />
+
+    </LinearLayout>
+
+
+
+
+
+
+
+</RelativeLayout>

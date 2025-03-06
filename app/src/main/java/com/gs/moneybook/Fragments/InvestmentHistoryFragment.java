@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class InvestmentHistoryFragment extends Fragment {
@@ -82,10 +83,21 @@ public class InvestmentHistoryFragment extends Fragment {
         binding.tvStartDate.setOnClickListener(v -> showDatePickerDialog(true));
         binding.tvEndDate.setOnClickListener(v -> showDatePickerDialog(false));
 
+
+        loadRecyclerView();
+
+
+
+        return view;
+    }
+
+    public void loadRecyclerView(){
         List<InvestmentModel> investmentModels = dbHelper.getAllInvestments(loggedInUserId);
 
         // Check if the list is empty before setting up the adapter
         if (investmentModels != null && !investmentModels.isEmpty()) {
+
+            Collections.reverse(investmentModels);
             // Set up the RecyclerView with LinearLayoutManager
             binding.recyclerViewInvestmentHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -98,9 +110,6 @@ public class InvestmentHistoryFragment extends Fragment {
             // Handle the case when no investments are available
             Toast.makeText(requireContext(), "No investment history available.", Toast.LENGTH_SHORT).show();
         }
-
-
-        return view;
     }
 
     private void showDatePickerDialog(final boolean isStartDate) {

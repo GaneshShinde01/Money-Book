@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Piggy Bank Body -->
+    <path
+        android:fillColor="#F07FA6"
+        android:pathData="M12,4c-4,0 -7,3 -7,7s3,7 7,7 7,-3 7,-7 -3,-7 -7,-7zM12,16c-2,0 -3,-1 -3,-3s1,-3 3,-3 3,1 3,3 -1,3 -3,3z"/>
+
+    <!-- Piggy Bank Leg -->
+    <path
+        android:fillColor="#F6377F"
+        android:pathData="M9,18h1v1H9zM14,18h1v1h-1z"/>
+
+    <!-- Coin Slot -->
+    <path
+        android:fillColor="#875A6C"
+        android:pathData="M10,7h4v1h-4z"/>
+
+    <!-- Coin Dropping -->
+    <path
+        android:fillColor="#E99820"
+        android:pathData="M12,4a1.5,1.5 0,1 1,0 -3a1.5,1.5 0,1 1,0 3z"/>
+
+</vector>

@@ -5,16 +5,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.gs.moneybook.Adapters.InvestmentAdapter;
 import com.gs.moneybook.Adapters.TransactionAdapter;
 import com.gs.moneybook.Database.DBHelper;
+import com.gs.moneybook.Model.InvestmentModel;
 import com.gs.moneybook.Model.TransactionModel;
 import com.gs.moneybook.databinding.FragmentAllTransactionsBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,15 +41,13 @@ public class AllTransactionsFragment extends Fragment {
         binding = FragmentAllTransactionsBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        binding.transactionRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         dbHelper = DBHelper.getInstance(requireContext());
 
-        // Initialize adapter with an empty list
-        transactionAdapter = new TransactionAdapter(requireContext(), new ArrayList<>());
-        binding.transactionRecyclerView.setAdapter(transactionAdapter);
+        loadRecyclerView();
 
 
-        executorService.execute(() -> {
+
+    /*    executorService.execute(() -> {
             List<TransactionModel> transactions = dbHelper.getTransactions(loggedInUserId);
             Log.d("AllTransationFragment", "Transaction list size: " + transactions.size());
 
@@ -65,9 +67,30 @@ public class AllTransactionsFragment extends Fragment {
 
                 }
             });
-        });
+        });*/
 
         return view;
+    }
+
+    public void loadRecyclerView(){
+        List<TransactionModel> transactionModels = dbHelper.getTransactions(loggedInUserId);
+
+        // Check if the list is empty before setting up the adapter
+        if (transactionModels != null && !transactionModels.isEmpty()) {
+
+            Collections.reverse(transactionModels);
+            // Set up the RecyclerView with LinearLayoutManager
+            binding.transactionRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+            // Initialize the adapter with the list of investments
+            transactionAdapter = new TransactionAdapter(requireContext(), transactionModels);
+
+            // Set the adapter to the RecyclerView
+            binding.transactionRecyclerView.setAdapter(transactionAdapter);
+        } else {
+            // Handle the case when no investments are available
+            Toast.makeText(requireContext(), "No investment history available.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
