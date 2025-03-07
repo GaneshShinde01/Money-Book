@@ -185,7 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_USER_IMAGES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_IMAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAYMENT_MODES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
@@ -295,22 +295,38 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     //insert user profile image
-    public boolean insertUserProfileImage(int userId, String imagePath) {
+    // Insert or Update User Profile Image
+    public boolean insertOrUpdateUserProfileImage(int userId, String imagePath) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        // Check if user image already exists
+        String existingImagePath = getUserProfileImagePath(userId);
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USER_IMAGE_USER_ID, userId);
         contentValues.put(COLUMN_USER_IMAGE_PATH, imagePath);
 
-        long result = db.insert(TABLE_USER_IMAGES, null, contentValues);
-        //db.close();
-
-        return result != -1;
+        if (existingImagePath != null) {
+            // Update existing image path
+            long result = db.update(TABLE_USER_IMAGES, contentValues, COLUMN_USER_IMAGE_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+            return result != -1;
+        } else {
+            // Insert new image path
+            long result = db.insert(TABLE_USER_IMAGES, null, contentValues);
+            return result != -1;
+        }
     }
+
+    public boolean deleteUserProfileImage(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_USER_IMAGES, COLUMN_USER_IMAGE_USER_ID + " = ?", new String[]{String.valueOf(userId)}) > 0;
+    }
+
+
 
     public String getUserProfileImagePath(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + COLUMN_USER_IMAGE_PATH + " FROM " + TABLE_USER_IMAGES
-                + " WHERE " + COLUMN_USER_IMAGE_ID + " = ?", new String[]{String.valueOf(userId)});
+                + " WHERE " + COLUMN_USER_IMAGE_USER_ID + " = ?", new String[]{String.valueOf(userId)});
 
         if (cursor.moveToFirst()) {
             String imagePath = cursor.getString(0);
@@ -320,6 +336,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+
 
 
 

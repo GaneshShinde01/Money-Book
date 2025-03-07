@@ -1,85 +1,203 @@
 package com.gs.moneybook.Fragments;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.MainActivity;
 import com.gs.moneybook.R;
-import com.gs.moneybook.TestActivity;
 import com.gs.moneybook.databinding.FragmentProfileBinding;
 
-public class ProfileFragment extends Fragment {
-    FragmentProfileBinding binding;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+public class ProfileFragment extends Fragment {
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private FragmentProfileBinding binding;
+    private Uri selectedImageUri;  // Store the selected image URI
+    private boolean isImageSet = false;  // Track if the image is already set
+    private DBHelper dbHelper;  // Add DBHelper instance
+    private int loggedInUserId = 1; // Assuming a static user ID for now
 
     public ProfileFragment() {
         // Required empty public constructor
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_profile, container, false);
-        binding = FragmentProfileBinding.inflate(inflater,container,false);
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
+        dbHelper = new DBHelper(requireContext());  // Initialize the DBHelper
 
-        binding.viewUserProfileButton.setOnClickListener(new View.OnClickListener() {
+        loadProfileImage(loggedInUserId);  // Load the profile image from DB
+
+        binding.profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new ViewProfileFragment(),"View Profile");
+                if (isImageSet) {
+                    showImageOptions();  // Show options if image is already set
+                } else {
+                    openImagePicker();  // Directly open image picker if no image is set
+                }
             }
         });
 
-        binding.addCategoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AddCategoryFragment(),"Add Category");
-            }
-        });
-
-        binding.addPaymentModeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AddPaymentModeFragment(),"Add Payment Mode");
-            }
-        });
-
-        binding.transactionAnalyticsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new TransactionAnalyticsFragment(),"Transaction Analytics");
-            }
-        });
-
-        binding.investmentHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new InvestmentHistoryFragment(),"Investment History");
-
-            }
-        });
-
-        binding.allTransactionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new AllTransactionsFragment(),"All Transactions");
-            }
-        });
-
-        binding.calendarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).loadFragment(new CalendarFragment(),"Calendar");
-            }
-        });
+        // Other button click listeners
+        setupButtonClickListeners();
 
         return binding.getRoot();
+    }
+
+    // Show options (View, Update, Delete) if image is set
+    private void showImageOptions() {
+        // You can use an AlertDialog or PopupMenu to display the options
+        PopupMenu popupMenu = new PopupMenu(requireContext(), binding.profileImage);
+        popupMenu.getMenuInflater().inflate(R.menu.profile_image_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_view_image) {
+                // Handle view image
+                viewImage();
+                return true;
+            } else if (item.getItemId() == R.id.action_update_image) {
+                // Handle update image (open picker)
+                openImagePicker();
+                return true;
+            } else if (item.getItemId() == R.id.action_delete_image) {
+                // Handle delete image
+                deleteImage();
+                return true;
+            } else {
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
+
+    // View image function (Display image in full-screen or gallery app)
+    private void viewImage() {
+        if (selectedImageUri != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(selectedImageUri, "image/*");
+            startActivity(intent);
+        }
+    }
+
+    // Delete image function (Clear image from view and reset flag)
+    private void deleteImage() {
+        dbHelper.deleteUserProfileImage(loggedInUserId);  // Delete image from DB
+        binding.profileImage.setImageResource(R.drawable.profile); // Reset to default placeholder image
+        selectedImageUri = null;
+        isImageSet = false;
+        Toast.makeText(requireContext(), "Profile image deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    // Open image picker to select a profile image
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            binding.profileImage.setImageURI(selectedImageUri);  // Set the selected image
+            isImageSet = true;
+            saveProfileImageToMoneyBook(selectedImageUri);  // Save the image locally
+        }
+    }
+
+    // Method to save the profile image in the MoneyBook folder and update DB
+    public void saveProfileImageToMoneyBook(Uri imageUri) {
+        File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File moneyBookFolder = new File(downloadsFolder, "MoneyBook");
+
+        // Create the MoneyBook folder if it doesn't exist
+        if (!moneyBookFolder.exists()) {
+            boolean folderCreated = moneyBookFolder.mkdirs();
+            if (!folderCreated) {
+                Toast.makeText(requireContext(), "Failed to create MoneyBook folder.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        // Generate a unique file name using the current date and time
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = "ProfileImage_" + timeStamp + ".jpg";
+
+        File imageFile = new File(moneyBookFolder, fileName);
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
+            saveBitmapToFile(bitmap, imageFile);
+
+            // Update image path in DB
+            boolean isSuccess = dbHelper.insertOrUpdateUserProfileImage(loggedInUserId, imageFile.getAbsolutePath());
+            if (isSuccess) {
+                Toast.makeText(requireContext(), "Profile image saved to " + imageFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(requireContext(), "Failed to save profile image.", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Failed to save profile image.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Save Bitmap to file
+    private void saveBitmapToFile(Bitmap bitmap, File file) throws IOException {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);  // Save the image
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
+    }
+
+    // Load the profile image from the database
+    private void loadProfileImage(int userId) {
+        String imagePath = dbHelper.getUserProfileImagePath(userId);
+        if (imagePath != null) {
+            File imgFile = new File(imagePath);
+            if (imgFile.exists()) {
+                binding.profileImage.setImageURI(Uri.fromFile(imgFile));
+                isImageSet = true;
+            }
+        } else {
+            binding.profileImage.setImageResource(R.drawable.profile);  // Default image
+        }
+    }
+
+    // Set up the other button click listeners
+    private void setupButtonClickListeners() {
+        binding.viewUserProfileButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new ViewProfileFragment(), "View Profile"));
+        binding.addCategoryButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new AddCategoryFragment(), "Add Category"));
+        binding.addPaymentModeButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new AddPaymentModeFragment(), "Add Payment Mode"));
+        binding.transactionAnalyticsButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new TransactionAnalyticsFragment(), "Transaction Analytics"));
+        binding.investmentHistoryButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new InvestmentHistoryFragment(), "Investment History"));
+        binding.allTransactionsButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new AllTransactionsFragment(), "All Transactions"));
+        binding.calendarButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new CalendarFragment(), "Calendar"));
     }
 }

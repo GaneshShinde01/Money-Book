@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             headerView = binding.sideNavView.getHeaderView(0);
         }
         if (headerView != null) {
-            ImageView profileImage = headerView.findViewById(R.id.profile_imageSideNav);
+            ImageView profileImage = headerView.findViewById(R.id.profile_image);
             TextView userName = headerView.findViewById(R.id.usernameSideNav);
             TextView userEmail = headerView.findViewById(R.id.useremailSideNav);
         }

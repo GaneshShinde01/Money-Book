@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="#CBE9E6"
     android:padding="16dp"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    >
 
     
     <androidx.cardview.widget.CardView
@@ -15,15 +16,20 @@
         app:cardCornerRadius="40dp"
         app:cardElevation="0dp"
         android:backgroundTint="#E9F2F2"
+        android:layout_gravity="center"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true"
         >
 
         <!-- Profile Image -->
         <ImageView
-            android:id="@+id/profile_imageSideNav"
+            android:id="@+id/profile_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/profile"
-            android:padding="10dp"
+            android:padding="0dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
             />
 
     </androidx.cardview.widget.CardView>
