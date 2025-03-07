@@ -43,18 +43,6 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         dbHelper = DBHelper.getInstance(getContext());
 
-
-       /* // Open drawer when button is clicked
-        binding.openDrawerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawerLayout = getActivity().findViewById(com.gs.moneybook.R.id.drawer_layout);
-                if (drawerLayout != null) {
-                    drawerLayout.openDrawer(getActivity().findViewById(com.gs.moneybook.R.id.navigation_view));
-                }
-            }
-        });
-*/
         totalSavings = dbHelper.getSavingsAmountForDashboard(loggedInUserId);
         totalExpense = dbHelper.getTotalExpenseForDashboard(loggedInUserId);
 
