@@ -3,6 +3,7 @@ package com.gs.moneybook;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private boolean doubleBackToExitPressedOnce = false;
     private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolBarMain);
         setSupportActionBar(toolbar);
+
+        drawerLayout = findViewById(R.id.drawer_layoutMain);
+        binding.drawerMenuIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.open();
+            }
+        });
 
 
         // Load the default fragment (DashboardFragment) initially
@@ -75,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new DashboardFragment(),"Dashboard");
                     binding.bottomNav.setSelectedItemId(R.id.navDashboard);  // Set the home item selected
                 } else {
-                    if (binding.drawerLayout.isDrawerOpen(binding.navigationView)) {
-                        binding.drawerLayout.closeDrawer(binding.navigationView);
+                    if (binding.drawerLayoutMain.isDrawerOpen(binding.navigationView)) {
+                        binding.drawerLayoutMain.closeDrawer(binding.navigationView);
                     } else if (doubleBackToExitPressedOnce) {
                         finish();
                     } else {
@@ -129,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         binding.toolBarTitle.setText(toolBarTitle);
 
 
+
         // Enable the drawer only for DashboardFragment
         if (fragment instanceof DashboardFragment) {
             enableDrawer();
@@ -140,9 +151,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int itemId = item.getItemId();
+        if(android.R.id.home == itemId){
+            onBackPress();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void onBackPress() {
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1){
+            getSupportFragmentManager().popBackStack();
+        }
+        else {
+            super.onBackPressed();
+        }
+
+    }
+
     // Enable drawer method
     private void enableDrawer() {
-        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        binding.drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         binding.navigationView.setVisibility(View.VISIBLE);  // Show the navigation view
         binding.drawerMenuIcon.setVisibility(View.VISIBLE);
         if (getSupportActionBar() != null) {
@@ -153,13 +187,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Disable drawer method
     private void disableDrawer() {
-        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        binding.drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         binding.navigationView.setVisibility(View.GONE);  // Hide the navigation view
         binding.drawerMenuIcon.setVisibility(View.GONE);
 
         // Set toolbar title
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setTitle("");
         }
     }

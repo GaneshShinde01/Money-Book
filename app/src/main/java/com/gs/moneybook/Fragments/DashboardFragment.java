@@ -44,7 +44,7 @@ public class DashboardFragment extends Fragment {
         dbHelper = DBHelper.getInstance(getContext());
 
 
-        // Open drawer when button is clicked
+       /* // Open drawer when button is clicked
         binding.openDrawerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +54,7 @@ public class DashboardFragment extends Fragment {
                 }
             }
         });
-
+*/
         totalSavings = dbHelper.getSavingsAmountForDashboard(loggedInUserId);
         totalExpense = dbHelper.getTotalExpenseForDashboard(loggedInUserId);
 

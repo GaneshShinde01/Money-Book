@@ -6,11 +6,6 @@
     android:background="@color/bgAppColor"
     tools:context=".Fragments.DashboardFragment">
 
-    <Button
-        android:id="@+id/openDrawerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Open Drawer" />
 
     <!-- Income and Outcome Section -->
     <LinearLayout
@@ -19,12 +14,11 @@
         android:orientation="horizontal"
         android:weightSum="2"
         android:id="@+id/llSavingsAndExpenses"
-        android:layout_below="@+id/openDrawerButton"
         android:background="@drawable/income_outcome_bg"
         android:padding="16dp"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="60dp"
         android:layout_marginBottom="24dp">
 
     <!-- Income Section -->
