@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_account"
-        android:title="Account"
-        android:icon="@drawable/ic_account"/>
+
+    <group
+        android:id="@+id/group1">
+
+        <item
+            android:id="@+id/side_nav_account"
+            android:title="Account"
+            android:icon="@drawable/ic_account"/>
+
+        <item
+            android:id="@+id/side_nav_calendar"
+            android:title="Calendar"
+            android:icon="@drawable/ic_calendar"/>
+
+        <item
+            android:id="@+id/side_nav_notification"
+            android:title="Notification"
+            android:icon="@drawable/ic_notification"/>
+
+        <item
+            android:id="@+id/side_nav_help"
+            android:title="Help"
+            android:icon="@drawable/ic_help"/>
+
+        <item
+            android:id="@+id/side_nav_backup"
+            android:title="Back-up"
+            android:icon="@drawable/ic_backup"/>
+
+
+    </group>
 
     <item
-        android:id="@+id/nav_acc_summary"
-        android:title="Acc Summary"
-        android:icon="@drawable/ic_summary"/>
-
-    <item
-        android:id="@+id/nav_calendar"
-        android:title="Calendar"
-        android:icon="@drawable/ic_calendar"/>
-
-    <item
-        android:id="@+id/nav_notification"
-        android:title="Notification"
-        android:icon="@drawable/ic_notification"/>
-
-    <item
-        android:id="@+id/nav_help"
-        android:title="Help"
-        android:icon="@drawable/ic_help"/>
-
-    <item
-        android:id="@+id/nav_backup"
-        android:title="Back-up"
-        android:icon="@drawable/ic_backup"/>
-
-    <item
-        android:id="@+id/nav_logout"
+        android:id="@+id/side_nav_logout"
         android:title="Logout"
         android:icon="@drawable/ic_logout"
         />

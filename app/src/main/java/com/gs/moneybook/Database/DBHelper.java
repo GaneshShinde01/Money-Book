@@ -40,6 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_TRANSACTIONS = "transactions";
     private static final String TABLE_SAVINGS = "savings";
     private static final String TABLE_REMINDERS = "reminders";
+    private static final String TABLE_USER_IMAGES = "user_image";
 
     // User Table Columns
     private static final String COLUMN_USER_ID = "id";
@@ -65,6 +66,20 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_USER_MONTHLY_INCOME + " REAL,"
             + COLUMN_USER_SAVINGS_GOAL + " REAL,"
             + COLUMN_USER_CURRENCY + " TEXT" + ")";
+
+    private static final String COLUMN_USER_IMAGE_ID = "imageId";
+    private static final String COLUMN_USER_IMAGE_USER_ID = "userId";
+    private static final String COLUMN_USER_IMAGE_PATH = "image_path";
+
+    // Create UserImages Table
+    private static final String CREATE_TABLE_USER_IMAGES = "CREATE TABLE " + TABLE_USER_IMAGES + "("
+            + COLUMN_USER_IMAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_USER_IMAGE_USER_ID + " INTEGER,"
+            + COLUMN_USER_IMAGE_PATH + " TEXT,"
+            + "FOREIGN KEY (" + COLUMN_USER_IMAGE_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ")"
+            + " ON DELETE CASCADE" + ")";
+
+
 
     // Create Categories Table
     private static final String COLUMN_CATEGORY_ID = "categoryId";
@@ -156,6 +171,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
+        db.execSQL(CREATE_TABLE_USER_IMAGES);
         db.execSQL(CREATE_TABLE_CATEGORIES);
         defaultCategories(db);
         db.execSQL(CREATE_TABLE_PAYMENT_MODES);
@@ -169,6 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_USER_IMAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAYMENT_MODES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
@@ -276,6 +293,35 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;
         }
     }
+
+    //insert user profile image
+    public boolean insertUserProfileImage(int userId, String imagePath) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_IMAGE_USER_ID, userId);
+        contentValues.put(COLUMN_USER_IMAGE_PATH, imagePath);
+
+        long result = db.insert(TABLE_USER_IMAGES, null, contentValues);
+        //db.close();
+
+        return result != -1;
+    }
+
+    public String getUserProfileImagePath(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_USER_IMAGE_PATH + " FROM " + TABLE_USER_IMAGES
+                + " WHERE " + COLUMN_USER_IMAGE_ID + " = ?", new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            String imagePath = cursor.getString(0);
+            cursor.close();
+            return imagePath;
+        }
+        cursor.close();
+        return null;
+    }
+
+
 
 
     // Helper method to insert a category

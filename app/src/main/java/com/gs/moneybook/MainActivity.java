@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.gs.moneybook.Fragments.AddExpenseFragment;
 import com.gs.moneybook.Fragments.AddIncomeFragment;
 import com.gs.moneybook.Fragments.BlankFragment;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
+    private int loggedInUserId = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,45 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 drawerLayout.open();
+            }
+        });
+
+        View headerView = null;
+        if (binding.sideNavView != null) {
+            headerView = binding.sideNavView.getHeaderView(0);
+        }
+        if (headerView != null) {
+            ImageView profileImage = headerView.findViewById(R.id.profile_imageSideNav);
+            TextView userName = headerView.findViewById(R.id.usernameSideNav);
+            TextView userEmail = headerView.findViewById(R.id.useremailSideNav);
+        }
+
+
+
+
+
+        binding.sideNavView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int itemId = item.getItemId();
+                if(itemId == R.id.side_nav_account){
+                    Toast.makeText(MainActivity.this, "Account", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.side_nav_calendar) {
+                    Toast.makeText(MainActivity.this, "Calendar", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.side_nav_notification) {
+                    Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.side_nav_help) {
+                    Toast.makeText(MainActivity.this, "Help", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.side_nav_backup) {
+                    Toast.makeText(MainActivity.this, "Back-up", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                }
+
+                drawerLayout.close();
+
+                return false;
             }
         });
 
@@ -85,19 +128,8 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new DashboardFragment(),"Dashboard");
                     binding.bottomNav.setSelectedItemId(R.id.navDashboard);  // Set the home item selected
                 } else {
-                    if (binding.drawerLayoutMain.isDrawerOpen(binding.navigationView)) {
+                    if (binding.navigationView != null && binding.drawerLayoutMain.isDrawerOpen(binding.navigationView)) {
                         binding.drawerLayoutMain.closeDrawer(binding.navigationView);
-                    } else if (doubleBackToExitPressedOnce) {
-                        finish();
-                    } else {
-                        doubleBackToExitPressedOnce = true;
-                        Toast.makeText(MainActivity.this, "Press back again to exit", Toast.LENGTH_SHORT).show();
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                doubleBackToExitPressedOnce = false;
-                            }
-                        }, 2000);
                     }
                 }
             }
@@ -177,7 +209,9 @@ public class MainActivity extends AppCompatActivity {
     // Enable drawer method
     private void enableDrawer() {
         binding.drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        binding.navigationView.setVisibility(View.VISIBLE);  // Show the navigation view
+        if (binding.navigationView != null) {
+            binding.navigationView.setVisibility(View.VISIBLE);  // Show the navigation view
+        }
         binding.drawerMenuIcon.setVisibility(View.VISIBLE);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -188,7 +222,9 @@ public class MainActivity extends AppCompatActivity {
     // Disable drawer method
     private void disableDrawer() {
         binding.drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        binding.navigationView.setVisibility(View.GONE);  // Hide the navigation view
+        if (binding.navigationView != null) {
+            binding.navigationView.setVisibility(View.GONE);  // Hide the navigation view
+        }
         binding.drawerMenuIcon.setVisibility(View.GONE);
 
         // Set toolbar title

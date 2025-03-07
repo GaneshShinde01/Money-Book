@@ -19,7 +19,7 @@
 
         <!-- Profile Image -->
         <ImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/profile_imageSideNav"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/profile"
@@ -31,7 +31,7 @@
 
     <!-- User Name -->
     <TextView
-        android:id="@+id/username"
+        android:id="@+id/usernameSideNav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ganesh Shinde"
@@ -41,7 +41,7 @@
         android:layout_marginTop="8dp"/>
 
     <TextView
-        android:id="@+id/useremail"
+        android:id="@+id/useremailSideNav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ganesh123@gmail.com"
