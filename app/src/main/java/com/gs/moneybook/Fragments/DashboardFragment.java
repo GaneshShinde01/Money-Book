@@ -2,7 +2,6 @@ package com.gs.moneybook.Fragments;
 
 import android.os.Bundle;
 
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -11,12 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.gs.moneybook.Adapters.InvestmentAdapter;
 import com.gs.moneybook.Adapters.TransactionAdapter;
 import com.gs.moneybook.Database.DBHelper;
-import com.gs.moneybook.Model.InvestmentModel;
 import com.gs.moneybook.Model.TransactionModel;
-import com.gs.moneybook.R;
 import com.gs.moneybook.databinding.FragmentDashboardBinding;
 
 import java.util.Collections;
