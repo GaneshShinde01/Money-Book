@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment;
 
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Model.TransactionModel;
-import com.gs.moneybook.R;
 import com.gs.moneybook.Utilities.DateUtils;
 import com.gs.moneybook.databinding.FragmentTransactionAnalyticsBinding;
 
