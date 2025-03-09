@@ -294,6 +294,21 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public String getUserEmailById(int userId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String userEmail = "";
+
+        Cursor cursor = db.rawQuery("SELECT "+ COLUMN_USER_EMAIL + " from " + TABLE_USERS + " where " + COLUMN_USER_ID + " = ?",new String[]{String.valueOf(userId)} );
+        if(cursor.moveToFirst()){
+            userEmail = cursor.getString(0);
+            cursor.close();
+            return userEmail;
+        }
+        cursor.close();
+        return null;
+
+    }
+
     //insert user profile image
     // Insert or Update User Profile Image
     public boolean insertOrUpdateUserProfileImage(int userId, String imagePath) {
