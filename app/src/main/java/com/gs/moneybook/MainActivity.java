@@ -1,5 +1,6 @@
 package com.gs.moneybook;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -65,13 +66,30 @@ public class MainActivity extends AppCompatActivity {
             TextView userName = headerView.findViewById(R.id.usernameSideNav);
             TextView userEmail = headerView.findViewById(R.id.useremailSideNav);
 
-            String imagePath = dbHelper.getUserProfileImagePath(loggedInUserId);
-            if (imagePath != null) {
-                File imgFile = new File(imagePath);
-                if (imgFile != null) {
-                    profileImage.setImageURI(Uri.fromFile(imgFile));
-                }
-            }
+//            String imagePath = dbHelper.getUserProfileImagePath(loggedInUserId);
+//            if (imagePath != null) {
+//                File imgFile = new File(imagePath);
+//                if (imgFile.exists()) {
+//                    profileImage.setImageURI(Uri.fromFile(imgFile));
+//                }else {
+//                    profileImage.setImageResource(R.drawable.profile);
+//                    //Toast.makeText(this, "error 1", Toast.LENGTH_SHORT).show();
+//                    System.out.println("Image file not found");
+//                }
+//            }
+//            else {
+//                profileImage.setImageResource(R.drawable.profile);
+//                //Toast.makeText(this, "Error 2", Toast.LENGTH_SHORT).show();
+//                System.out.println("Image path not found");
+//            }
+
+//            SharedPreferences sharedPreferences = getSharedPreferences("UserData",MODE_PRIVATE);
+//            String profileImagePath = sharedPreferences.getString("profileImagePath",null);
+//
+//            if (profileImagePath != null){
+//                File imgFile = new File(profileImagePath);
+//                profileImage.setImageURI(Uri.fromFile(imgFile));
+//            }
 
             String userNameFromDB = dbHelper.getUserNameById(loggedInUserId);
             String userEmailFromDB = dbHelper.getUserEmailById(loggedInUserId);

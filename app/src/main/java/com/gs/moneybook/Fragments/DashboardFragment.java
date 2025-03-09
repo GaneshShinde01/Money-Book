@@ -78,7 +78,7 @@ public class DashboardFragment extends Fragment {
             binding.recyclerViewTransactionsDashboard.setAdapter(transactionAdapter);
         } else {
             // Handle the case when no investments are available
-            Toast.makeText(requireContext(), "No investment history available.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(requireContext(), "No investment history available.", Toast.LENGTH_SHORT).show();
         }
     }
 }

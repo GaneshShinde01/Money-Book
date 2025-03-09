@@ -10,7 +10,7 @@
     >
 
     
-    <androidx.cardview.widget.CardView
+   <!-- <androidx.cardview.widget.CardView
         android:layout_width="80dp"
         android:layout_height="80dp"
         app:cardCornerRadius="40dp"
@@ -21,7 +21,7 @@
         app:cardUseCompatPadding="true"
         >
 
-        <!-- Profile Image -->
+        &lt;!&ndash; Profile Image &ndash;&gt;
         <ImageView
             android:id="@+id/profile_image"
             android:layout_width="80dp"
@@ -33,7 +33,7 @@
             />
 
     </androidx.cardview.widget.CardView>
-
+-->
 
     <!-- User Name -->
     <TextView

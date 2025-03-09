@@ -1,7 +1,10 @@
 package com.gs.moneybook.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +42,7 @@ public class ProfileFragment extends Fragment {
     private int loggedInUserId = 1; // Assuming a static user ID for now
     private View dialogView;
 
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -47,6 +51,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
         dbHelper = new DBHelper(requireContext());  // Initialize the DBHelper
 
         loadProfileImage(loggedInUserId);  // Load the profile image from DB
@@ -74,7 +79,7 @@ public class ProfileFragment extends Fragment {
         // Other button click listeners
         setupButtonClickListeners();
 
-        return binding.getRoot();
+        return view;
     }
 
     // Show options (View, Update, Delete) if image is set
@@ -230,6 +235,11 @@ public class ProfileFragment extends Fragment {
             if (imgFile.exists()) {
                 binding.profileImage.setImageURI(Uri.fromFile(imgFile));
                 isImageSet = true;
+
+//                SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserData",MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString("profileImagePath",imagePath);
+//                editor.apply();
             }
         } else {
             binding.profileImage.setImageResource(R.drawable.profile);  // Default image
