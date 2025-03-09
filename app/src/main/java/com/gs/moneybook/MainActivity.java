@@ -1,5 +1,6 @@
 package com.gs.moneybook;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Fragments.AddExpenseFragment;
 import com.gs.moneybook.Fragments.AddIncomeFragment;
 import com.gs.moneybook.Fragments.BlankFragment;
@@ -24,11 +26,14 @@ import com.gs.moneybook.Fragments.DashboardFragment;
 import com.gs.moneybook.Fragments.ProfileFragment;
 import com.gs.moneybook.databinding.ActivityMainBinding;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private boolean doubleBackToExitPressedOnce = false;
     private Toolbar toolbar;
+    private DBHelper dbHelper;
     private DrawerLayout drawerLayout;
     private int loggedInUserId = 1;
 
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        dbHelper = DBHelper.getInstance(this);
 
         toolbar = findViewById(R.id.toolBarMain);
         setSupportActionBar(toolbar);
@@ -57,6 +64,27 @@ public class MainActivity extends AppCompatActivity {
             ImageView profileImage = headerView.findViewById(R.id.profile_image);
             TextView userName = headerView.findViewById(R.id.usernameSideNav);
             TextView userEmail = headerView.findViewById(R.id.useremailSideNav);
+
+            String imagePath = dbHelper.getUserProfileImagePath(loggedInUserId);
+            if (imagePath != null) {
+                File imgFile = new File(imagePath);
+                if (imgFile != null) {
+                    profileImage.setImageURI(Uri.fromFile(imgFile));
+                }
+            }
+
+            String userNameFromDB = dbHelper.getUserNameById(loggedInUserId);
+            String userEmailFromDB = dbHelper.getUserEmailById(loggedInUserId);
+
+            if(userNameFromDB != null && userEmailFromDB != null)
+            {
+                userName.setText(userNameFromDB);
+                userEmail.setText(userEmailFromDB);
+            }else {
+                userName.setText("Not Found");
+                userEmail.setText("Not Found");
+            }
+
         }
 
 

@@ -51,6 +51,15 @@ public class ProfileFragment extends Fragment {
 
         loadProfileImage(loggedInUserId);  // Load the profile image from DB
 
+        String userNameFromDB = dbHelper.getUserNameById(loggedInUserId);
+        if (userNameFromDB != null){
+
+            binding.userNameTextView.setText(userNameFromDB);
+        }else {
+            binding.userNameTextView.setText("Not Found");
+        }
+
+
         binding.profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

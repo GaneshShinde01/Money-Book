@@ -309,6 +309,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public String getUserNameById(int userId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String userName = "";
+
+        Cursor cursor = db.rawQuery("SELECT "+ COLUMN_USER_FULL_NAME + " from " + TABLE_USERS + " where " + COLUMN_USER_ID + " = ?",new String[]{String.valueOf(userId)} );
+        if(cursor.moveToFirst()){
+            userName = cursor.getString(0);
+            cursor.close();
+            return userName;
+        }
+        cursor.close();
+        return null;
+
+    }
+
     //insert user profile image
     // Insert or Update User Profile Image
     public boolean insertOrUpdateUserProfileImage(int userId, String imagePath) {
