@@ -1,11 +1,13 @@
 package com.gs.moneybook.Fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 
@@ -14,6 +16,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gs.moneybook.Database.DBHelper;
@@ -34,6 +37,7 @@ public class ProfileFragment extends Fragment {
     private boolean isImageSet = false;  // Track if the image is already set
     private DBHelper dbHelper;  // Add DBHelper instance
     private int loggedInUserId = 1; // Assuming a static user ID for now
+    private View dialogView;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -73,7 +77,7 @@ public class ProfileFragment extends Fragment {
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_view_image) {
                 // Handle view image
-                viewImage();
+                showImageDialog();
                 return true;
             } else if (item.getItemId() == R.id.action_update_image) {
                 // Handle update image (open picker)
@@ -90,13 +94,46 @@ public class ProfileFragment extends Fragment {
         popupMenu.show();
     }
 
-    // View image function (Display image in full-screen or gallery app)
-    private void viewImage() {
-        if (selectedImageUri != null) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(selectedImageUri, "image/*");
-            startActivity(intent);
+
+    private void showImageDialog() {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogView = inflater.inflate(R.layout.image_dialog, null);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
+        dialogBuilder.setView(dialogView);
+
+        // Create and show the dialog
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+
+        ImageView profileImage = dialogView.findViewById(R.id.profile_imageDialog);
+        AppCompatButton updateProfileImage = dialogView.findViewById(R.id.update_profileImage);
+        AppCompatButton closeProfileImage = dialogView.findViewById(R.id.close_profileImage);
+
+        String imagePath = dbHelper.getUserProfileImagePath(loggedInUserId);
+        if (imagePath != null) {
+            File imgFile = new File(imagePath);
+            if (imgFile.exists()) {
+                profileImage.setImageURI(Uri.fromFile(imgFile));
+            }
         }
+
+        // Close dialog and open image picker when 'Update' button is clicked
+        updateProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();  // Close the dialog
+                openImagePicker();  // Open image picker to update image
+            }
+        });
+
+        // Close dialog when 'Close' button is clicked
+        closeProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();  // Close the dialog
+            }
+        });
     }
 
     // Delete image function (Clear image from view and reset flag)
