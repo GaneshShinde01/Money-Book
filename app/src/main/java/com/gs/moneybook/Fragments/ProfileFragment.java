@@ -116,6 +116,7 @@ public class ProfileFragment extends Fragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
         dialogBuilder.setView(dialogView);
 
+
         // Create and show the dialog
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();

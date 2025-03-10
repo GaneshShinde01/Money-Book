@@ -105,7 +105,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void showLoginSuccessPopup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Login Successful");
         builder.setMessage("You have successfully logged in.");
         builder.setCancelable(false); // Make it non-dismissible
