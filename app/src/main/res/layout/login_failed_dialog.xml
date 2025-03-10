@@ -9,52 +9,37 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login Successful"
+        android:text="Login Failed"
         android:textSize="30sp"
         android:layout_marginTop="20dp"
         android:textColor="#5F77F2"
         />
 
     <View
-        android:layout_width="230dp"
+        android:layout_width="160dp"
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
         android:background="@color/black"
         />
 
-    <LinearLayout
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:text="User not found with,"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         android:layout_marginTop="20dp"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello, "
-            android:textSize="20sp"
-            android:textColor="#ED920B"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Name"
-            android:id="@+id/userNameLoginSuccess"
-            android:textSize="20sp"
-            android:textColor="#ED920B"
-            />
-    </LinearLayout>
-
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Well Come to Money Book!!"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        android:layout_marginTop="20dp"
+        android:text="User Email"
+        android:id="@+id/userEmailLoginFail"
+        android:textColor="@color/weekdayTextColor"
+        android:textSize="25sp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         />
+
 </LinearLayout>

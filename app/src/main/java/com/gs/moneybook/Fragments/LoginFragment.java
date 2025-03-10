@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -27,6 +28,7 @@ public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
     private DBHelper dbHelper;
+    private final int loggedInUserId = 1;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -63,7 +65,8 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(getContext(), "Incorrect password", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
+                    showLoginFailPopup();
                 }
             }
         });
@@ -124,6 +127,11 @@ public class LoginFragment extends Fragment {
             window.setLayout(600,1200);
         }
 */
+
+        TextView userName = dialogView.findViewById(R.id.userNameLoginSuccess);
+        String userNameFromDb = dbHelper.getUserNameById(loggedInUserId);
+        userName.setText(userNameFromDb);
+
         // Automatically dismiss the dialog and redirect after 2 seconds (2000 milliseconds)
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             dialog.dismiss(); // Dismiss the dialog
@@ -132,6 +140,29 @@ public class LoginFragment extends Fragment {
             startActivity(intent);
             getActivity().finish(); // Close the login activity so the user can't go back to it
         }, 8000); // Delay of 2 seconds (2000 milliseconds)
+    }
+
+    private void showLoginFailPopup(){
+
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogView = inflater.inflate(R.layout.login_failed_dialog,null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView);
+        builder.setCancelable(true);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView userEmail = dialogView.findViewById(R.id.userEmailLoginFail);
+        String userEmailFromLoginPage = binding.etEmail.getText().toString();
+        userEmail.setText(userEmailFromLoginPage);
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            dialog.dismiss(); // Dismiss the dialog
+
+        }, 8000); // Delay of 2 seconds (2000 milliseconds)
+
     }
 
     private boolean validateInputs(String email, String password) {
