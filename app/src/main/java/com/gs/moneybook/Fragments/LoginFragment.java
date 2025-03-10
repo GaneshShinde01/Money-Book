@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.MainActivity;
+import com.gs.moneybook.R;
 import com.gs.moneybook.TestActivity;
 import com.gs.moneybook.databinding.FragmentLoginBinding;
 import com.gs.moneybook.Model.UserModel;
@@ -105,21 +107,31 @@ public class LoginFragment extends Fragment {
     }
 
     private void showLoginSuccessPopup() {
+
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogView = inflater.inflate(R.layout.login_dialog,null);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Login Successful");
-        builder.setMessage("You have successfully logged in.");
-        builder.setCancelable(false); // Make it non-dismissible
+        builder.setView(dialogView);
+//        builder.setTitle("Login Successful");
+//        builder.setMessage("You have successfully logged in.");
+//        builder.setCancelable(false); // Make it non-dismissible
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Automatically dismiss the dialog and redirect after 4 seconds (4000 milliseconds)
+        /*Window window = dialog.getWindow();
+        if(window != null){
+            window.setLayout(600,1200);
+        }
+*/
+        // Automatically dismiss the dialog and redirect after 2 seconds (2000 milliseconds)
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             dialog.dismiss(); // Dismiss the dialog
             // Redirect to MainActivity after successful login
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
             getActivity().finish(); // Close the login activity so the user can't go back to it
-        }, 2000); // Delay of 2 seconds (2000 milliseconds)
+        }, 8000); // Delay of 2 seconds (2000 milliseconds)
     }
 
     private boolean validateInputs(String email, String password) {
