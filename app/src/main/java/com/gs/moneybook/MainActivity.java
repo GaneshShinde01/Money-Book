@@ -3,9 +3,12 @@ package com.gs.moneybook;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (id == R.id.navAdd) {
                     showPopUpMenu();
+                    //showCustomPopUpMenu();
                     loadFragment(new BlankFragment(),"");
                     return true;
                 } else if (id == R.id.navProfile) {
@@ -202,6 +206,40 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    private void showCustomPopUpMenu(){
+
+        // Inflate the custom layout for the popup menu
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.add_button_popup_menu, null);
+
+// Create the PopupWindow
+        final PopupWindow popupWindow = new PopupWindow(popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true);
+
+// Set click listeners for menu items
+        TextView item1 = popupView.findViewById(R.id.addIncome);
+        TextView item2 = popupView.findViewById(R.id.addExpense);
+
+        item1.setOnClickListener(v -> {
+            // Handle Item 1 click
+            loadFragment(new AddIncomeFragment(),"Add Income");
+            popupWindow.dismiss();
+        });
+        item2.setOnClickListener(v -> {
+            // Handle Item 2 click
+            loadFragment(new AddExpenseFragment(),"Add Expense");
+            popupWindow.dismiss();
+        });
+
+
+// Show the popup menu at a specific location (anchor view)
+        View anchorView = findViewById(R.id.navAdd);
+        popupWindow.showAsDropDown(anchorView, 10, 10); // Adjust offset values as needed
+
+    }
+
     // Load fragment method
     public void loadFragment(Fragment fragment, String toolBarTitle) {
         FragmentManager fm = getSupportFragmentManager();
@@ -219,10 +257,8 @@ public class MainActivity extends AppCompatActivity {
         if (fragment instanceof DashboardFragment) {
             enableDrawer();
 
-
         } else {
             disableDrawer();
-
         }
     }
 

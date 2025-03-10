@@ -39,6 +39,7 @@ public class WellComeScreen extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(WellComeScreen.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         WindowManager windowManager = getWindowManager();
