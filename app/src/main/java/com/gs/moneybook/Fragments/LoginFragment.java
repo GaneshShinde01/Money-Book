@@ -184,4 +184,5 @@ public class LoginFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+    //check
 }
