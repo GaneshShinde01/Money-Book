@@ -139,7 +139,7 @@ public class LoginFragment extends Fragment {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
             getActivity().finish(); // Close the login activity so the user can't go back to it
-        }, 8000); // Delay of 2 seconds (2000 milliseconds)
+        }, 2000); // Delay of 2 seconds (2000 milliseconds)
     }
 
     private void showLoginFailPopup(){
