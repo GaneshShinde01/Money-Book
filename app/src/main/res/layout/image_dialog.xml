@@ -32,7 +32,6 @@
                 android:layout_width="350dp"
                 android:layout_height="350dp"
                 android:src="@drawable/profile"
-                android:padding="0dp"
                 android:adjustViewBounds="true"
                 />
 
