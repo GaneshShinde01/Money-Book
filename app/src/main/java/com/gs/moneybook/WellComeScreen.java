@@ -60,7 +60,7 @@ public class WellComeScreen extends AppCompatActivity {
     private void animateTriangles(ImageView triangle, long delay) {
         // Translation Animation (Move from left to right infinitely)
         ObjectAnimator translationX = ObjectAnimator.ofFloat(triangle, "translationX", 0f, screenWidth);
-        translationX.setDuration(1500);
+        translationX.setDuration(1550);
         translationX.setRepeatCount(ObjectAnimator.INFINITE);
         translationX.setRepeatMode(ObjectAnimator.RESTART);
         translationX.setStartDelay(delay);
