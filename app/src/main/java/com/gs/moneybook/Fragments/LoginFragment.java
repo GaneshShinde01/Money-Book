@@ -161,7 +161,7 @@ public class LoginFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             dialog.dismiss(); // Dismiss the dialog
 
-        }, 8000); // Delay of 2 seconds (2000 milliseconds)
+        }, 2000); // Delay of 2 seconds (2000 milliseconds)
 
     }
 
