@@ -31,7 +31,6 @@ public class AddExpenseFragment extends Fragment {
     private final String ADD_NEW_PAYMENT_MODE = "Other"; // Option for user to add new payment mode
     private String categoryNameFromList;
     private String categoryName;
-    private String paymentModeFromList;
 
     @Nullable
     @Override
