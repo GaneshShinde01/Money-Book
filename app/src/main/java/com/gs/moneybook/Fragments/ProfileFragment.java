@@ -257,4 +257,6 @@ public class ProfileFragment extends Fragment {
         binding.allTransactionsButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new AllTransactionsFragment(), "All Transactions"));
         binding.calendarButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new CalendarFragment(), "Calendar"));
     }
+
+    //profile details check
 }
