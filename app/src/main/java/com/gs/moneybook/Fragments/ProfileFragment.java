@@ -258,5 +258,4 @@ public class ProfileFragment extends Fragment {
         binding.calendarButton.setOnClickListener(v -> ((MainActivity) getActivity()).loadFragment(new CalendarFragment(), "Calendar"));
     }
 
-    //profile details check
 }
