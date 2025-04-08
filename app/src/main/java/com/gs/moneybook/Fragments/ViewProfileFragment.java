@@ -77,4 +77,6 @@ public class ViewProfileFragment extends Fragment {
         binding = null;
 
     }
+
+    //view profile check
 }
