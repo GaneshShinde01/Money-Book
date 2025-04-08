@@ -78,5 +78,4 @@ public class ViewProfileFragment extends Fragment {
 
     }
 
-    //view profile check
 }
