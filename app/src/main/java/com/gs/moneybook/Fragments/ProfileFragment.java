@@ -1,6 +1,5 @@
 package com.gs.moneybook.Fragments;
 
-import static android.content.Context.MODE_PRIVATE;
 
 import android.app.AlertDialog;
 import android.content.Intent;
