@@ -1,6 +1,9 @@
 package com.gs.moneybook.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,6 +32,10 @@ public class LoginFragment extends Fragment {
     private FragmentLoginBinding binding;
     private DBHelper dbHelper;
     private final int loggedInUserId = 1;
+    private SharedPreferences sharedPreferences;
+    private static final String SHARED_PREF_NAME = "user_session";
+    public static final String KEY_LOGGEDIN_USREMAIL = "userEmail";
+
 
     public LoginFragment() {
         // Required empty public constructor
@@ -59,8 +66,11 @@ public class LoginFragment extends Fragment {
                 if (dbHelper.checkUserExists(email)) {
                     UserModel user = dbHelper.getUserByEmail(email);
                     if (user != null && user.getPassword().equals(password)) {
+
+                        storeToSharedPreferences();
                         // Show popup dialog for login successful
                         showLoginSuccessPopup();
+
                     } else {
                         Toast.makeText(getContext(), "Incorrect password", Toast.LENGTH_SHORT).show();
                     }
@@ -177,6 +187,16 @@ public class LoginFragment extends Fragment {
         }
 
         return true;
+    }
+
+    private void storeToSharedPreferences(){
+
+        sharedPreferences = getContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String userEmail = binding.etEmail.getText().toString().trim();
+       // int userId = dbHelper.getUserIdByEmail(userEmail);
+        editor.putString(KEY_LOGGEDIN_USREMAIL,userEmail);
+        editor.apply();
     }
 
     @Override

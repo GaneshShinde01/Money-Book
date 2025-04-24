@@ -1,6 +1,7 @@
 package com.gs.moneybook;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -21,10 +22,20 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent =new Intent(SplashScreen.this, WellComeScreen.class);
-                startActivity(intent);
+
+
+
+                   //startActivity(new Intent(SplashScreen.this, MainActivity.class));
+
+
+                    startActivity(new Intent(SplashScreen.this, WellComeScreen.class));
+
+                    //startActivity(new Intent(SplashScreen.this, TestActivity.class));
+
+
                 finish();
+
             }
-        },4000);
+        },2000);
     }
 }

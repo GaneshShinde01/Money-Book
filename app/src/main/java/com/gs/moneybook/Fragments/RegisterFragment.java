@@ -115,6 +115,8 @@ public class RegisterFragment extends Fragment {
                         Toast.makeText(requireContext(), "User registered successfully!", Toast.LENGTH_SHORT).show();
                         // Clear input fields after successful registration
                         clearInputFields();
+                        ((TestActivity)getActivity()).loadFragment(new LoginFragment(),"LoginFragment");
+
                     } else {
                         Toast.makeText(requireContext(), "Registration failed, try again!", Toast.LENGTH_SHORT).show();
                     }

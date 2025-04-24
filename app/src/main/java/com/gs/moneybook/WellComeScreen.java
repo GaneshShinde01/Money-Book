@@ -3,6 +3,7 @@ package com.gs.moneybook;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.Display;
@@ -37,7 +38,10 @@ public class WellComeScreen extends AppCompatActivity {
         binding.customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WellComeScreen.this, MainActivity.class);
+
+                //SharedPreferences prefs = getSharedPreferences("user_session", MODE_PRIVATE);
+                //prefs.edit().putBoolean("first_time", false).apply();
+                Intent intent = new Intent(WellComeScreen.this, TestActivity.class);
                 startActivity(intent);
                 finish();
             }
