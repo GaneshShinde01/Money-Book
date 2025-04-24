@@ -27,6 +27,7 @@ import com.gs.moneybook.Database.DBHelper;
 import com.gs.moneybook.Fragments.AddExpenseFragment;
 import com.gs.moneybook.Fragments.AddIncomeFragment;
 import com.gs.moneybook.Fragments.BlankFragment;
+import com.gs.moneybook.Fragments.CalendarFragment;
 import com.gs.moneybook.Fragments.DashboardFragment;
 import com.gs.moneybook.Fragments.LoginFragment;
 import com.gs.moneybook.Fragments.ProfileFragment;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Account", Toast.LENGTH_SHORT).show();
                 } else if (itemId == R.id.side_nav_calendar) {
                     Toast.makeText(MainActivity.this, "Calendar", Toast.LENGTH_SHORT).show();
+                    loadFragment(new CalendarFragment(),"CalendarFrament");
                 } else if (itemId == R.id.side_nav_notification) {
                     Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
                 } else if (itemId == R.id.side_nav_help) {
