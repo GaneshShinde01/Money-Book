@@ -17,7 +17,6 @@ public class TestActivity extends AppCompatActivity {
     ActivityTestBinding binding;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -13,6 +13,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class SplashScreen extends AppCompatActivity {
 
+    private static final String SHARED_PREF_NAME = "user_session";
+    private SharedPreferences sharedPreferences;
+    public static final String KEY_LOGIN_SUCCESS = "loginSuccess";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,8 +28,16 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
 
-                    startActivity(new Intent(SplashScreen.this, WellComeScreen.class));
+                sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME,MODE_PRIVATE);
+                boolean loginSuccess = sharedPreferences.getBoolean(KEY_LOGIN_SUCCESS,false);
+                if(loginSuccess){
+                    startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                }
+                else {
 
+
+                    startActivity(new Intent(SplashScreen.this, WellComeScreen.class));
+                }
 
                 finish();
 

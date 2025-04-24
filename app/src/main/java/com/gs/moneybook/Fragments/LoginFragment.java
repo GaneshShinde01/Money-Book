@@ -35,6 +35,7 @@ public class LoginFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private static final String SHARED_PREF_NAME = "user_session";
     public static final String KEY_LOGGEDIN_USREMAIL = "userEmail";
+    public static final String KEY_LOGIN_SUCCESS = "loginSuccess";
 
 
     public LoginFragment() {
@@ -196,6 +197,7 @@ public class LoginFragment extends Fragment {
         String userEmail = binding.etEmail.getText().toString().trim();
        // int userId = dbHelper.getUserIdByEmail(userEmail);
         editor.putString(KEY_LOGGEDIN_USREMAIL,userEmail);
+        editor.putBoolean(KEY_LOGIN_SUCCESS,true);
         editor.apply();
     }
 
