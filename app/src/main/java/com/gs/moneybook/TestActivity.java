@@ -15,8 +15,7 @@ import com.gs.moneybook.databinding.ActivityTestBinding;
 
 public class TestActivity extends AppCompatActivity {
     ActivityTestBinding binding;
-    private static final String SHARED_PREF_NAME = "loggedInUser";
-    public static final String KEY_LOGGEDIN_USERID = "userId";
+
 
 
     @Override
@@ -26,21 +25,6 @@ public class TestActivity extends AppCompatActivity {
         binding = ActivityTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
- /*       SharedPreferences prefs = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
-        String user = prefs.getString(KEY_LOGGEDIN_USERID, null);
-
-        if (user != null) {
-            startActivity(new Intent(this, MainActivity.class));
-        } else {
-            startActivity(new Intent(this, TestActivity.class));
-            //loadFragment(new LoginFragment(),"LoginFragment");
-        }
-        finish(); // Don't show MainActivity again
-
-*/
-
-       // startActivity(new Intent(this, MainActivity.class));
-        //finish();
 
         loadFragment(new LoginFragment(),"LoginFragment");
 

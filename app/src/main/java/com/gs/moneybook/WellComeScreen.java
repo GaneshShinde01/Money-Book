@@ -39,8 +39,6 @@ public class WellComeScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //SharedPreferences prefs = getSharedPreferences("user_session", MODE_PRIVATE);
-                //prefs.edit().putBoolean("first_time", false).apply();
                 Intent intent = new Intent(WellComeScreen.this, TestActivity.class);
                 startActivity(intent);
                 finish();

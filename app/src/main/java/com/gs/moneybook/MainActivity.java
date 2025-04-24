@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private DBHelper dbHelper;
     private DrawerLayout drawerLayout;
     private int loggedInUserId = 1;
-    public static final String SHARED_PREF_NAME = "user_session";
-    SharedPreferences sharedPreferences;
+
 
 
     @Override
